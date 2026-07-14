@@ -1,0 +1,16 @@
+numpy<2
+pandas
+scipy
+scikit-learn
+matplotlib
+seaborn
+jupyterlab
+notebook
+ipykernel
+lightgbm
+xgboost
+catboost
+shap
+statsmodels
+tqdm
+tensorflow==2.15.*

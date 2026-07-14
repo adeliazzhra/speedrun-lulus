@@ -1,0 +1,40 @@
+# Local environments
+.conda-env/
+.conda-pkgs/
+.venv/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Editor / OS files
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store
+
+# Documents (keep extracted text instead)
+docs/*.docx
+
+# Generated data artifacts
+dataset/preprocessed/
+dataset/features/
+
+# Large raw datasets are not stored in Git.
+dataset/*.csv
+dataset/*.csv.gz
+dataset/*.gz
+
+# Keep only small split/config artifacts for reproducibility.
+dataset/splits/*
+!dataset/splits/cv_folds.csv
+!dataset/splits/calendar_split_labels.csv
+!dataset/splits/split_summary.json
+

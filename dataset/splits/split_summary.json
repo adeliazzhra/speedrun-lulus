@@ -1,0 +1,130 @@
+{
+  "source": "Outline Skripsi Bab 3 - Tahap Pembagian Data (Data Splitting)",
+  "main_split": {
+    "training": {
+      "name": "training",
+      "start_day": "d_1",
+      "end_day": "d_1913",
+      "n_days": 1913,
+      "start_date": "2011-01-29",
+      "end_date": "2016-04-24",
+      "start_week": 11101,
+      "end_week": 11613
+    },
+    "test_public": {
+      "name": "test_public",
+      "start_day": "d_1914",
+      "end_day": "d_1941",
+      "n_days": 28,
+      "start_date": "2016-04-25",
+      "end_date": "2016-05-22",
+      "start_week": 11613,
+      "end_week": 11617
+    }
+  },
+  "cross_validation": [
+    {
+      "fold": "CV0",
+      "training": {
+        "name": "CV0_training",
+        "start_day": "d_1",
+        "end_day": "d_1801",
+        "n_days": 1801,
+        "start_date": "2011-01-29",
+        "end_date": "2016-01-03",
+        "start_week": 11101,
+        "end_week": 11549
+      },
+      "validation": {
+        "name": "CV0_validation",
+        "start_day": "d_1802",
+        "end_day": "d_1829",
+        "n_days": 28,
+        "start_date": "2016-01-04",
+        "end_date": "2016-01-31",
+        "start_week": 11549,
+        "end_week": 11601
+      }
+    },
+    {
+      "fold": "CV1",
+      "training": {
+        "name": "CV1_training",
+        "start_day": "d_1",
+        "end_day": "d_1829",
+        "n_days": 1829,
+        "start_date": "2011-01-29",
+        "end_date": "2016-01-31",
+        "start_week": 11101,
+        "end_week": 11601
+      },
+      "validation": {
+        "name": "CV1_validation",
+        "start_day": "d_1830",
+        "end_day": "d_1857",
+        "n_days": 28,
+        "start_date": "2016-02-01",
+        "end_date": "2016-02-28",
+        "start_week": 11601,
+        "end_week": 11605
+      }
+    },
+    {
+      "fold": "CV2",
+      "training": {
+        "name": "CV2_training",
+        "start_day": "d_1",
+        "end_day": "d_1857",
+        "n_days": 1857,
+        "start_date": "2011-01-29",
+        "end_date": "2016-02-28",
+        "start_week": 11101,
+        "end_week": 11605
+      },
+      "validation": {
+        "name": "CV2_validation",
+        "start_day": "d_1858",
+        "end_day": "d_1885",
+        "n_days": 28,
+        "start_date": "2016-02-29",
+        "end_date": "2016-03-27",
+        "start_week": 11605,
+        "end_week": 11609
+      }
+    },
+    {
+      "fold": "CV3",
+      "training": {
+        "name": "CV3_training",
+        "start_day": "d_1",
+        "end_day": "d_1885",
+        "n_days": 1885,
+        "start_date": "2011-01-29",
+        "end_date": "2016-03-27",
+        "start_week": 11101,
+        "end_week": 11609
+      },
+      "validation": {
+        "name": "CV3_validation",
+        "start_day": "d_1886",
+        "end_day": "d_1913",
+        "n_days": 28,
+        "start_date": "2016-03-28",
+        "end_date": "2016-04-24",
+        "start_week": 11609,
+        "end_week": 11613
+      }
+    }
+  ],
+  "artifacts": {
+    "calendar_split_labels": "C:\\Users\\adeli\\speedrun-lulus\\dataset\\splits\\calendar_split_labels.csv",
+    "sales_train_main": "C:\\Users\\adeli\\speedrun-lulus\\dataset\\splits\\sales_train_main.csv",
+    "sales_test_public": "C:\\Users\\adeli\\speedrun-lulus\\dataset\\splits\\sales_test_public.csv",
+    "cv_folds": "C:\\Users\\adeli\\speedrun-lulus\\dataset\\splits\\cv_folds.csv"
+  },
+  "notes": [
+    "Split dilakukan sebelum feature engineering untuk mencegah data leakage.",
+    "Main split mengikuti train d_1-d_1913 dan public test d_1914-d_1941.",
+    "Empat fold expanding window disiapkan untuk time-series cross-validation."
+  ]
+}

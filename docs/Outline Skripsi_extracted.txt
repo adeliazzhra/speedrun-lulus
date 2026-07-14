@@ -1,0 +1,922 @@
+PENINGKATAN AKURASI PERAMALAN PERMINTAAN RITEL MENGGUNAKAN ENSEMBLE LEARNING BERBASIS GROUPED MODELING PADA DATASET M5 FORECASTING ACCURACY
+ENHANCING RETAIL DEMAND FORECASTING ACCURACY USING GROUPED ENSEMBLE LEARNING ON THE M5 FORECASTING ACCURACY DATASET
+Topik: Artificial Intelligence
+2602193585 / Adelia Fatimahtu Azzahra / Computer Science / +62 81354913647
+2702268334 / Hizkia Aldrich Jericho / Computer Science /  +62 82152082522
+2702379561 / Raenault Maxine Salle Bandaso / Computer Science /  +62 8128552009
+Computer Science
+Computer Science Study Program
+School of Computer Science
+Universitas Bina Nusantara
+Malang
+2026/2027
+DAFTAR ISI
+DAFTAR ISIi
+BAB 14
+1.1.LATAR BELAKANG4
+1.2.RUMUSAN MASALAH8
+1.3.RUANG LINGKUP8
+1.3.1.Dataset dan Karakteristik Data8
+1.3.2.Tahap Preprocessing Data9
+1.3.3.Feature engineering9
+1.3.4.Strategi Grouped Modeling10
+1.3.5.Model Peramalan yang Digunakan10
+1.3.6.Strategi Peramalan Multi-Horizon11
+1.3.7.Pengembangan Ensemble Model11
+1.3.8.Evaluasi dan Validasi Model12
+1.3.9.Interpretabilitas dan Stability Analysis12
+1.3.10.Batasan Penelitian13
+1.4.TUJUAN DAN MANFAAT14
+1.4.1.Tujuan14
+1.4.2.Manfaat14
+1.5.METODE PENELITIAN14
+1.5.1.Solusi yang diusulkan14
+1.5.2.Sistematika Penulisan16
+BAB 218
+2.1.LANDASAN TEORI18
+2.1.1.Peramalan Permintaan18
+2.1.2.Time Series Forecasting19
+2.1.3.M5 Forecasting Accuracy Dataset19
+2.1.4.Machine Learning untuk Peramalan20
+2.1.5.Gradient Boosting Decision Tree21
+2.1.6.LightGBM21
+2.1.7.XGBoost23
+2.1.8.CatBoost24
+2.1.9.Deep Learning untuk Peramalan25
+2.1.10.Long Short-Term Memory26
+2.1.11.Feature engineering28
+2.1.12.Lag Features28
+2.1.13.Rolling Statistics29
+2.1.14.Calendar features dan Price features29
+2.1.15.Grouped Modeling dan Hierarchical Forecasting30
+2.1.16.Multi-Horizon Forecasting31
+2.1.17.Recursive Forecasting31
+2.1.18.Direct Forecasting32
+2.1.19.Ensemble Learning33
+2.1.20.Optimized Weighted Ensemble33
+2.1.21.Stacking Ensemble dengan Ridge Regression34
+2.1.22.Time-Based Validation34
+2.1.23.Metrik Evaluasi Forecasting35
+2.1.24.Weighted Root Mean Squared Scaled Error36
+2.1.25.SHAP untuk Interpretabilitas Model36
+2.1.26.Stability Analysis37
+2.2.RELATED WORKS37
+BAB 340
+3.1.KERANGKA BERPIKIR40
+3.1.1.Tahap 1: Pengumpulan Dataset (M5)40
+3.1.2.Tahap 2: Analisis Data Eksploratoris (EDA)41
+3.1.3.Tahap 3: Pembagian Data (Data Splitting)41
+3.1.4.Tahap 4: Data Preprocessing41
+3.1.5.Tahap 5: Feature Engineering41
+3.1.6.Tahap 6: Strategi Group Modeling42
+3.1.7.Tahap 7: Model Training42
+3.1.8.Tahap 8: Model Evaluation42
+3.1.9.Tahap 9: Best Model Selection42
+3.1.10.Tahap 10: Ensemble Model43
+3.1.11.Tahap 11: Final Evaluation43
+3.1.12.Tahap 12: Output Prediksi 28 Hari43
+3.2.METODE PENELITIAN43
+3.2.1.Tahap Pengumpulan Dataset43
+3.2.2.Tahap Exploratory Data Analysis (EDA)44
+3.2.3.Tahap Pembagian Data (Data Splitting)45
+3.2.4.Tahap Data Preprocessing46
+3.2.5.Tahap Feature Engineering48
+3.2.6.Tahap Strategi Grouped Modeling51
+3.2.7.Tahap Training Base Model52
+3.2.8.Tahap Strategi Forecasting Multi-Horizon58
+3.2.9.Tahap Evaluasi Model Individual60
+3.2.10.Tahap Best Model Selection61
+3.2.11.Tahap Ensemble Model63
+3.2.12.Tahap Final Evaluation66
+3.2.13.Tahap Output Prediksi 28 Hari68
+3.3.ALUR IMPLEMENTASI SISTEM69
+DAFTAR PUSTAKA70
+BAB 1
+PENDAHULUAN
+LATAR BELAKANG
+Peramalan permintaan atau demand forecasting merupakan salah satu komponen penting dalam pengelolaan rantai pasok dan operasional ritel. Hasil peramalan digunakan sebagai dasar dalam pengambilan keputusan seperti pengelolaan persediaan, perencanaan distribusi, penentuan kebutuhan produksi, serta pengurangan risiko stockout dan overstock. Dalam industri ritel berskala besar, peramalan permintaan menjadi semakin kompleks karena melibatkan banyak produk, toko, kategori, serta pola permintaan yang berbeda antar waktu. Ketidakakuratan prediksi dapat menyebabkan kerugian operasional, penurunan tingkat layanan pelanggan, dan ketidakefisienan dalam proses distribusi barang.
+Kompleksitas peramalan permintaan ritel semakin meningkat karena data penjualan tidak hanya dipengaruhi oleh pola historis, tetapi juga oleh faktor eksternal seperti harga, promosi, hari libur, event kalender, serta perubahan perilaku konsumen. Selain itu, data ritel sering memiliki karakteristik intermittent demand, yaitu kondisi ketika permintaan suatu produk tidak muncul secara terus-menerus dan banyak observasi bernilai nol. Giannopoulos et al. (2025) menjelaskan bahwa intermittent demand forecasting masih menjadi tantangan penting dalam peramalan permintaan karena pola permintaan yang tidak reguler dapat menurunkan akurasi model. Karakteristik ini juga ditemukan pada dataset M5 Forecasting Accuracy yang memiliki ribuan deret waktu penjualan produk Walmart dengan struktur hierarkis.
+Selain faktor internal seperti harga dan kategori produk, sistem peramalan juga perlu mempertimbangkan gangguan rantai pasok dan perubahan pola permintaan yang tidak stabil. Arora et al. (2025) menunjukkan bahwa metode statistik tradisional seperti Exponential Smoothing membutuhkan mekanisme tambahan untuk menyesuaikan prediksi ketika terjadi demand shock atau gangguan rantai pasok. Hal ini menunjukkan bahwa pendekatan konvensional sering kali memiliki keterbatasan ketika digunakan pada data permintaan yang bersifat dinamis, tidak stasioner, dan dipengaruhi oleh banyak faktor eksternal.
+Salah satu dataset yang banyak digunakan sebagai benchmark dalam penelitian peramalan permintaan ritel adalah M5 Forecasting Accuracy Dataset. Dataset ini berasal dari kompetisi M5 Forecasting yang menggunakan data penjualan harian Walmart dan memiliki struktur hierarkis pada berbagai level agregasi, mulai dari total penjualan, negara bagian, toko, kategori, departemen, hingga kombinasi produk dan toko. Makridakis et al. (2022) menjelaskan bahwa kompetisi M5 dirancang untuk mengevaluasi kemampuan model dalam memprediksi permintaan ritel secara akurat pada data berskala besar dan hierarkis. Oleh karena itu, dataset M5 menjadi relevan untuk menguji efektivitas metode peramalan modern, terutama pada kasus ritel dengan banyak produk dan tingkat agregasi yang kompleks.
+Perkembangan metode machine learning memberikan peluang untuk meningkatkan akurasi peramalan permintaan. Berbeda dengan metode statistik tradisional yang bergantung pada asumsi tertentu, model machine learning mampu mempelajari hubungan non-linear antara data penjualan historis, harga, kalender, event, dan atribut hierarkis. Model berbasis Gradient Boosting Decision Tree seperti LightGBM, XGBoost, dan CatBoost banyak digunakan dalam peramalan berbasis data tabular karena mampu menangani fitur dalam jumlah besar serta menangkap interaksi kompleks antar variabel. Constantin et al. (2025) menunjukkan bahwa LightGBM dapat digunakan secara efektif untuk peramalan time series dengan memanfaatkan fitur seperti lag features dan rolling Statistics. Long et al. (2025) juga menunjukkan bahwa pendekatan berbasis gradient boosted trees dapat digunakan secara skalabel dalam peramalan ritel dan mampu memanfaatkan struktur data serta fitur tambahan untuk meningkatkan performa prediksi.
+Dalam konteks peramalan ritel skala besar, strategi pemodelan juga menjadi faktor penting. Pendekatan global forecasting model memungkinkan satu model dilatih menggunakan banyak deret waktu sekaligus sehingga model dapat mempelajari pola umum dari berbagai produk dan toko. Zanotti (2025) menunjukkan bahwa model global dalam peramalan permintaan ritel dapat memberikan performa yang kompetitif sekaligus mempertimbangkan efisiensi pelatihan model. Namun, dataset ritel seperti M5 juga memiliki variasi pola permintaan antar toko, kategori, dan departemen. Oleh karena itu, pendekatan grouped modeling dapat digunakan untuk membagi proses pemodelan berdasarkan kelompok tertentu, seperti store, store-category, dan store-department, agar model dapat menangkap pola permintaan yang lebih spesifik pada tiap kelompok.
+Struktur hierarkis dalam data ritel juga menjadi aspek penting dalam meningkatkan kualitas peramalan. Abolghasemi (2025) menekankan pentingnya pemanfaatan informasi pada berbagai level rantai pasok dalam peramalan hierarkis. Petropoulos, Hollyman, dan Spiliotis (2025) juga membahas pentingnya pendekatan berbasis sub-hierarki dalam proses rekonsiliasi peramalan untuk data berskala besar. Temuan ini mendukung penggunaan strategi pemodelan yang mempertimbangkan level hierarkis dalam dataset M5, karena pola permintaan pada level toko, kategori, departemen, dan produk dapat memiliki karakteristik yang berbeda.
+Selain model berbasis pohon, pendekatan deep learning juga banyak digunakan dalam peramalan permintaan karena kemampuannya dalam menangkap pola Temporal dan hubungan non-linear yang kompleks. Ahmed et al. (2025) menunjukkan bahwa framework deep learning dapat digunakan untuk peramalan rantai pasok dan dapat dikombinasikan dengan SHAP untuk meningkatkan interpretabilitas model. Dalam penelitian ini, model LSTM digunakan sebagai representasi model deep learning karena kemampuannya dalam mempelajari dependensi Temporal pada data time series. Namun, model deep learning umumnya membutuhkan sumber daya komputasi yang lebih besar dan tidak selalu unggul pada data tabular dibandingkan model berbasis gradient boosting.
+Peramalan permintaan ritel umumnya membutuhkan prediksi untuk beberapa periode ke depan, sehingga strategi multi-horizon forecasting menjadi penting. Dalam kompetisi M5, model perlu memprediksi penjualan selama 28 hari ke depan. Dua strategi yang umum digunakan adalah recursive forecasting dan direct forecasting. Pendekatan recursive forecasting menggunakan satu model secara iteratif dengan memanfaatkan hasil prediksi sebelumnya sebagai input untuk prediksi berikutnya, tetapi berisiko mengalami akumulasi error. Sebaliknya, direct forecasting membangun model terpisah untuk setiap horizon prediksi sehingga dapat mengurangi risiko error propagation, tetapi membutuhkan sumber daya komputasi yang lebih besar. Lazcano et al. (2025) menunjukkan bahwa pemilihan strategi multi-horizon forecasting berpengaruh terhadap performa model dan perlu disesuaikan dengan karakteristik data.
+Untuk mengatasi keterbatasan model tunggal dan strategi peramalan individual, pendekatan ensemble learning banyak digunakan dalam penelitian forecasting modern. Ensemble learning menggabungkan beberapa model atau beberapa strategi prediksi untuk menghasilkan output yang lebih akurat dan stabil. Mohammed et al. (2026) menunjukkan bahwa framework hybrid forecasting dapat meningkatkan kemampuan model dalam menghadapi ketidakpastian permintaan dan mendukung perencanaan persediaan adaptif. Seyam et al. (2025) juga menunjukkan bahwa model stacking ensemble dapat digunakan dalam peramalan permintaan makanan dengan menggabungkan beberapa model dasar dan meta-learner untuk meningkatkan akurasi prediksi. Samal dan Ghosh (2026) memperkuat temuan tersebut dengan menunjukkan bahwa pendekatan ensemble dalam peramalan permintaan ritel multi-channel dapat meningkatkan performa prediksi dibandingkan model tunggal.
+Selain akurasi, stabilitas model juga menjadi aspek penting dalam sistem peramalan. Model yang baik tidak hanya menghasilkan error rendah pada satu periode pengujian, tetapi juga harus konsisten pada berbagai periode validasi, kelompok data, dan horizon prediksi. Godahewa et al. (2025) menekankan pentingnya forecast stability sebagai aspek evaluasi tambahan dalam peramalan. Dalam konteks dataset M5, stabilitas perlu dianalisis pada beberapa aspek, seperti stabilitas antar cross-validation folds, stabilitas antar kelompok hierarkis, dan stabilitas antar horizon prediksi 1 sampai 28 hari. Dengan demikian, evaluasi model tidak hanya berfokus pada peningkatan akurasi, tetapi juga pada konsistensi performa model.
+Berdasarkan perkembangan penelitian tersebut, masih terdapat peluang untuk meningkatkan akurasi peramalan permintaan ritel pada dataset M5 dengan menggabungkan beberapa pendekatan. Penelitian ini mengusulkan penggunaan ensemble learning berbasis grouped modeling dengan membandingkan model LightGBM, XGBoost, CatBoost, dan LSTM pada strategi recursive dan direct forecasting. Hasil prediksi dari model terbaik kemudian digabungkan menggunakan pendekatan Optimized Weighted ensemble dan stacking ensemble untuk memperoleh prediksi akhir selama 28 hari. Evaluasi dilakukan menggunakan WRMSSE sebagai metrik utama kompetisi M5, serta metrik tambahan seperti RMSE, MAE, MAPE, analisis SHAP, dan stability analysis. Dengan pendekatan ini, penelitian diharapkan dapat meningkatkan akurasi dan stabilitas peramalan permintaan ritel pada dataset berskala besar dan hierarkis.
+RUMUSAN MASALAH
+Berdasarkan latar belakang penelitian, permasalahan yang dikaji dalam penelitian ini dirumuskan sebagai berikut:
+Bagaimana pengaruh penerapan ensemble learning terhadap peningkatan akurasi peramalan permintaan ritel dibandingkan dengan model machine learning tunggal pada dataset kompetisi M5?
+Bagaimana implementasi metode ensemble learning dalam proses peramalan permintaan ritel menggunakan dataset kompetisi M5?
+Bagaimana perbandingan performa beberapa metode ensemble learning dalam menghasilkan prediksi permintaan ritel yang lebih akurat pada dataset kompetisi M5?
+RUANG LINGKUP
+Agar penelitian ini terarah dan sesuai dengan tujuan penelitian, maka ruang lingkup penelitian ditetapkan sebagai berikut.
+Dataset dan Karakteristik Data
+Penelitian ini menggunakan dataset M5 Forecasting Accuracy yang bersumber dari kompetisi M5 Forecasting pada Kaggle. Dataset ini dipilih karena merupakan salah satu benchmark peramalan permintaan ritel berskala besar yang memiliki struktur hierarkis dan multivariat.
+Data yang digunakan dalam penelitian mencakup tiga komponen utama, yaitu:
+Data penjualan historis yang berisi penjualan harian produk Walmart.
+Data kalender yang memuat informasi tanggal, hari, bulan, event khusus, serta indikator SNAP.
+Data harga jual yang memuat informasi harga produk pada setiap toko dan minggu tertentu.
+Dataset M5 memiliki struktur hierarkis yang terdiri dari beberapa level agregasi, seperti total penjualan, negara bagian, toko, kategori produk, departemen, item, serta kombinasi item dan toko. Penelitian ini memanfaatkan karakteristik hierarkis tersebut dalam proses pemodelan berbasis kelompok atau grouped modeling.
+Tahap Preprocessing Data
+Penelitian ini mencakup proses preprocessing data untuk memastikan data siap digunakan dalam proses pemodelan. Tahapan preprocessing yang dilakukan meliputi:
+Penggabungan data penjualan, kalender, dan harga.
+Transformasi data dari format wide ke format long.
+Pemeriksaan dan penanganan duplikasi data.
+Penanganan nilai hilang pada fitur harga, kalender, lag, dan rolling.
+Encoding variabel kategorikal seperti item, department, category, store, state, event, dan SNAP.
+Validasi kesesuaian data berdasarkan urutan waktu untuk mencegah kebocoran data masa depan.
+Preprocessing dilakukan dengan tetap mempertahankan struktur waktu karena data yang digunakan merupakan data time series.
+Feature engineering
+Penelitian ini membangun fitur-fitur prediktif yang relevan untuk peramalan permintaan ritel. Fitur yang digunakan meliputi:
+Lag features, yaitu fitur penjualan pada periode sebelumnya, seperti lag mingguan, bulanan, dan tahunan.
+Rolling Statistics, seperti rata-rata bergerak, standar deviasi, nilai maksimum, dan nilai minimum dalam jendela waktu tertentu.
+Calendar features, seperti hari dalam minggu, bulan, tahun, akhir pekan, event khusus, dan SNAP.
+Price features, seperti harga aktual, perubahan harga, harga relatif, dan indikator diskon.
+Group features, seperti store, category, department, state, dan kombinasi antar level hierarki.
+Fitur-fitur tersebut digunakan untuk membantu model menangkap pola historis, musiman, pengaruh harga, serta perbedaan karakteristik permintaan antar kelompok produk dan toko.
+Strategi Grouped Modeling
+Penelitian ini membatasi strategi pemodelan pada pendekatan grouped modeling berdasarkan struktur hierarkis dataset M5. Strategi grouping yang digunakan meliputi:
+By store, yaitu pemodelan berdasarkan 10 toko.
+By store + Category, yaitu pemodelan berdasarkan kombinasi 10 toko dan 3 kategori produk.
+By store + Department, yaitu pemodelan berdasarkan kombinasi 10 toko dan 7 departemen.
+Pendekatan ini digunakan untuk mengetahui apakah pembagian model berdasarkan kelompok hierarkis mampu meningkatkan akurasi dan stabilitas prediksi dibandingkan pendekatan model yang lebih umum.
+Model Peramalan yang Digunakan
+Penelitian ini menggunakan beberapa model peramalan berbasis machine learning dan deep learning. Model yang digunakan meliputi:
+LightGBM, sebagai model utama berbasis Gradient Boosting Decision Tree.
+XGBoost, sebagai model pembanding berbasis Gradient Boosting Decision Tree.
+CatBoost, sebagai model pembanding yang memiliki kemampuan menangani fitur kategorikal.
+Long Short-Term Memory (LSTM), sebagai representasi model deep learning untuk menangkap pola Temporal dalam data time series.
+Model Transformer, Temporal Fusion Transformer, N-BEATS, N-HiTS, dan model deep learning kompleks lainnya tidak termasuk dalam ruang lingkup penelitian ini.
+Strategi Peramalan Multi-Horizon
+Penelitian ini melakukan peramalan permintaan untuk horizon 28 hari ke depan, sesuai dengan format kompetisi M5 Forecasting Accuracy. Strategi peramalan yang digunakan meliputi:
+Recursive forecasting, yaitu strategi yang menggunakan satu model secara iteratif untuk memprediksi beberapa hari ke depan. Hasil prediksi sebelumnya digunakan sebagai input untuk prediksi berikutnya.
+Direct atau non-recursive forecasting, yaitu strategi yang membangun model terpisah untuk setiap horizon prediksi, sehingga setiap hari dalam horizon 28 hari diprediksi oleh model khusus.
+Penelitian ini membandingkan kedua strategi tersebut untuk mengetahui pengaruhnya terhadap akurasi dan stabilitas prediksi.
+Pengembangan Ensemble Model
+Penelitian ini mengembangkan model akhir menggunakan pendekatan ensemble learning. Ensemble dilakukan dengan menggabungkan hasil prediksi dari model-model terbaik berdasarkan evaluasi pada data validasi. Metode ensemble yang digunakan meliputi:
+Optimized Weighted Ensemble, yaitu penggabungan prediksi menggunakan bobot optimal yang dicari berdasarkan performa validasi, terutama untuk meminimalkan nilai WRMSSE.
+Stacking Ensemble dengan Ridge Regression, yaitu pendekatan ensemble yang menggunakan prediksi dari model-model dasar sebagai input bagi model meta-learner.
+Tujuan penggunaan ensemble adalah untuk meningkatkan akurasi prediksi, mengurangi variansi error, dan menghasilkan model yang lebih stabil dibandingkan model tunggal.
+Evaluasi dan Validasi Model
+Evaluasi model dilakukan menggunakan pendekatan time-based validation karena data yang digunakan merupakan data time series. Data training dan validation dibagi berdasarkan urutan waktu untuk menghindari kebocoran informasi dari masa depan ke masa lalu.
+Metrik evaluasi yang digunakan dalam penelitian ini meliputi:
+Weighted Root Mean Squared Scaled Error (WRMSSE) sebagai metrik utama karena merupakan metrik resmi pada kompetisi M5 Forecasting Accuracy.
+Root Mean Squared Error (RMSE) sebagai metrik tambahan untuk mengukur besar error kuadrat.
+Mean Absolute Error (MAE) sebagai metrik tambahan untuk mengukur rata-rata error absolut.
+Mean Absolute Percentage Error (MAPE) sebagai metrik tambahan untuk melihat kesalahan dalam bentuk persentase, dengan mempertimbangkan keterbatasannya pada data bernilai nol.
+Hasil evaluasi digunakan untuk membandingkan performa model tunggal, strategi recursive dan direct, strategi grouped modeling, serta hasil akhir ensemble.
+Interpretabilitas dan Stability Analysis
+Penelitian ini tidak hanya mengevaluasi akurasi model, tetapi juga melakukan analisis interpretabilitas dan stabilitas model.
+Analisis interpretabilitas dilakukan menggunakan SHAP untuk melihat kontribusi fitur terhadap hasil prediksi, seperti fitur lag, rolling Statistics, harga, kalender, event, SNAP, dan fitur hierarkis. Stability analysis dilakukan pada beberapa aspek, yaitu:
+Stabilitas antar cross-validation folds, untuk melihat konsistensi performa model pada beberapa periode validasi.
+Stabilitas antar kelompok data, untuk melihat performa model pada kelompok store, category, dan department.
+Stabilitas antar horizon prediksi, untuk melihat apakah model tetap konsisten dari hari ke-1 sampai hari ke-28.
+Analisis ini digunakan untuk memastikan bahwa peningkatan akurasi tidak hanya terjadi pada satu kondisi tertentu, tetapi juga konsisten pada berbagai kelompok dan horizon prediksi.
+Batasan Penelitian
+Penelitian ini memiliki beberapa batasan sebagai berikut:
+Dataset yang digunakan terbatas pada M5 Forecasting Accuracy Dataset.
+Prediksi dilakukan untuk horizon 28 hari ke depan.
+Model yang digunakan terbatas pada LightGBM, XGBoost, CatBoost, dan LSTM.
+Penelitian tidak membahas deployment model ke sistem produksi atau aplikasi real-time.
+Penelitian tidak melakukan optimasi hyperparameter secara ekstensif menggunakan AutoML.
+Penelitian tidak mengembangkan arsitektur deep learning kompleks seperti Transformer, Temporal Fusion Transformer, N-BEATS, atau N-HiTS.
+Evaluasi utama difokuskan pada akurasi forecasting menggunakan WRMSSE, dengan RMSE, MAE, dan MAPE sebagai metrik pendukung.
+Penelitian difokuskan pada peningkatan akurasi dan stabilitas prediksi, bukan pada optimasi biaya persediaan secara langsung.
+TUJUAN DAN MANFAAT
+Tujuan
+Berdasarkan rumusan masalah yang telah disusun, maka tujuan dari penelitian ini adalah sebagai berikut:
+Mengimplementasikan metode ensemble learning dalam proses peramalan permintaan ritel menggunakan dataset kompetisi M5.
+Menganalisis pengaruh penerapan ensemble learning terhadap peningkatan akurasi peramalan permintaan ritel dibandingkan dengan model machine learning tunggal pada dataset kompetisi M5.
+Membandingkan performa beberapa metode ensemble learning untuk menentukan metode yang menghasilkan prediksi permintaan ritel paling akurat pada dataset kompetisi M5.
+Manfaat
+Berdasarkan penelitian yang dilakukan, penelitian ini diharapkan dapat memberikan manfaat sebagai berikut:
+Memberikan kontribusi dalam pengembangan ilmu pengetahuan di bidang machine learning, khususnya pada penerapan metode ensemble learning untuk peramalan permintaan ritel.
+Membantu perusahaan ritel dalam meningkatkan akurasi peramalan permintaan sehingga dapat mendukung pengambilan keputusan terkait persediaan barang dan distribusi produk.
+Memberikan solusi berbasis machine learning yang dapat digunakan sebagai bahan pertimbangan dalam pengelolaan rantai pasok dan perencanaan bisnis ritel.
+METODE PENELITIAN
+Solusi yang diusulkan
+Penelitian ini mengusulkan metode ensemble learning berbasis grouped modeling untuk meningkatkan akurasi peramalan permintaan ritel. Dataset yang digunakan adalah M5 Forecasting Accuracy Dataset, yang terdiri dari data penjualan historis Walmart, data kalender, dan data harga jual. Dataset ini memiliki struktur hierarkis yang kompleks, sehingga pendekatan pemodelan perlu mempertimbangkan perbedaan pola permintaan antar toko, kategori, departemen, dan produk.
+Solusi yang diusulkan dimulai dengan proses preprocessing data, yaitu menggabungkan data penjualan, kalender, dan harga, menangani nilai hilang, melakukan encoding terhadap variabel kategorikal, serta mengubah data ke format yang sesuai untuk pemodelan time series. Setelah itu, dilakukan proses feature engineering untuk membentuk fitur prediktif seperti lag features, rolling Statistics, fitur kalender, fitur harga, dan fitur grup berdasarkan struktur hierarkis dataset.
+Setelah fitur terbentuk, data dibagi menggunakan pendekatan time-based splitting, yaitu data historis digunakan sebagai data pelatihan, sedangkan 28 hari terakhir digunakan sebagai data validasi atau pengujian. Pendekatan ini digunakan karena data yang digunakan merupakan data time series, sehingga pembagian data harus mempertahankan urutan waktu dan menghindari kebocoran informasi dari masa depan ke masa lalu.
+Tahap berikutnya adalah menerapkan strategi grouped modeling berdasarkan tiga skema, yaitu by store, by store + category, dan by store + department. Strategi ini digunakan untuk mengetahui apakah pembagian model berdasarkan kelompok hierarkis dapat membantu model menangkap pola permintaan yang lebih spesifik dibandingkan pendekatan pemodelan yang terlalu umum.
+Pada setiap kelompok data, dilakukan pelatihan beberapa model dasar, yaitu LightGBM, XGBoost, CatBoost, dan LSTM. Model LightGBM, XGBoost, dan CatBoost digunakan sebagai representasi model berbasis Gradient Boosting Decision Tree, sedangkan LSTM digunakan sebagai representasi model deep learning untuk menangkap pola Temporal pada data time series. Setiap model diuji menggunakan dua strategi peramalan multi-horizon, yaitu recursive forecasting dan direct atau non-recursive forecasting untuk menghasilkan prediksi permintaan selama 28 hari ke depan.
+Hasil prediksi dari model-model terbaik kemudian digabungkan menggunakan dua pendekatan ensemble. Pendekatan pertama adalah Optimized Weighted Ensemble, yaitu penggabungan prediksi dengan bobot optimal yang ditentukan berdasarkan performa validasi untuk meminimalkan nilai WRMSSE. Pendekatan kedua adalah Stacking Ensemble dengan Ridge Regression, yaitu penggunaan hasil prediksi dari model dasar sebagai input bagi model meta-learner untuk menghasilkan prediksi akhir.
+Evaluasi model dilakukan menggunakan Weighted Root Mean Squared Scaled Error (WRMSSE) sebagai metrik utama karena merupakan metrik resmi pada kompetisi M5 Forecasting Accuracy. Selain itu, digunakan juga metrik pendukung seperti RMSE, MAE, dan MAPE. Untuk memperkuat analisis, penelitian ini juga melakukan SHAP analysis untuk mengetahui kontribusi fitur terhadap prediksi model, serta stability analysis untuk menilai konsistensi performa model antar cross-validation folds, antar kelompok data, dan antar horizon prediksi.
+Dengan solusi ini, penelitian diharapkan dapat menghasilkan model peramalan permintaan ritel yang lebih akurat, stabil, dan mampu memanfaatkan struktur hierarkis dataset M5 secara lebih efektif.
+Sistematika Penulisan
+Sistematika penulisan skripsi ini disusun untuk memberikan gambaran mengenai struktur pembahasan dalam penelitian. Adapun sistematika penulisan yang digunakan adalah sebagai berikut.
+BAB 1 PENDAHULUAN
+Bab ini membahas latar belakang penelitian, rumusan masalah, ruang lingkup, tujuan dan manfaat penelitian, metode penelitian, solusi yang diusulkan, serta sistematika penulisan. Bab ini menjadi dasar dalam menjelaskan alasan dilakukannya penelitian serta arah penelitian yang akan dilakukan.
+BAB 2 TINJAUAN REFERENSI
+Bab ini berisi landasan teori yang berkaitan dengan topik penelitian, seperti peramalan permintaan, time series forecasting, M5 Forecasting dataset, machine learning, deep learning, ensemble learning, grouped modeling, multi-horizon forecasting, WRMSSE, SHAP, dan stability analysis. Selain itu, bab ini juga membahas penelitian terdahulu yang relevan sebagai dasar perbandingan dan identifikasi research gap.
+BAB 3 METODE PENELITIAN
+Bab ini menjelaskan tahapan penelitian secara rinci, mulai dari pengumpulan dataset, preprocessing data, feature engineering, pembagian data training dan testing, grouped modeling, pelatihan model dasar, strategi recursive dan direct forecasting, pengembangan ensemble model, hingga metode evaluasi yang digunakan. Bab ini juga memuat kerangka berpikir atau flowchart penelitian.
+BAB 4 HASIL DAN PEMBAHASAN
+Bab ini menyajikan hasil eksperimen dari setiap model dan strategi yang digunakan. Pembahasan mencakup perbandingan performa model tunggal, perbandingan strategi recursive dan direct forecasting, analisis grouped modeling, hasil Optimized Weighted ensemble, hasil stacking ensemble, serta evaluasi akhir menggunakan WRMSSE, RMSE, MAE, dan MAPE. Bab ini juga membahas hasil SHAP analysis dan stability analysis.
+BAB 5 SIMPULAN DAN SARAN
+Bab ini berisi kesimpulan dari hasil penelitian berdasarkan rumusan masalah dan tujuan yang telah ditetapkan. Selain itu, bab ini juga memuat saran untuk pengembangan penelitian selanjutnya, seperti penggunaan model lain, optimasi hyperparameter yang lebih luas, eksplorasi arsitektur deep learning lanjutan, atau pengembangan sistem forecasting untuk skenario operasional nyata.
+BAB 2
+TINJAUAN REFERENSI
+LANDASAN TEORI
+Peramalan Permintaan
+Peramalan permintaan merupakan proses untuk memperkirakan jumlah kebutuhan produk pada periode yang akan datang dengan memanfaatkan data historis serta informasi pendukung lainnya. Dalam industri ritel, peramalan permintaan memiliki peran yang penting karena hasil prediksi digunakan sebagai dasar dalam pengambilan keputusan, seperti pengelolaan persediaan, pengadaan barang, distribusi produk, dan pencegahan terjadinya kelebihan maupun kekurangan stok.
+Peramalan yang kurang akurat dapat menimbulkan dampak operasional bagi perusahaan. Jika permintaan diprediksi terlalu tinggi, perusahaan berisiko mengalami kelebihan stok yang dapat meningkatkan biaya penyimpanan. Sebaliknya, jika permintaan diprediksi terlalu rendah, perusahaan dapat mengalami stockout yang menyebabkan hilangnya peluang penjualan dan menurunnya kepuasan pelanggan. Liu et al. (2025) menunjukkan bahwa pendekatan machine learning dapat digunakan untuk memprediksi risiko stockout, sehingga hasil peramalan memiliki hubungan langsung dengan efektivitas pengelolaan persediaan.
+Dalam kondisi rantai pasok modern, pola permintaan juga dapat berubah akibat faktor eksternal, seperti gangguan distribusi, perubahan perilaku konsumen, dan ketidakpastian pasar. Arora et al. (2025) menjelaskan bahwa disrupsi rantai pasok dapat menyebabkan perubahan pola permintaan yang sulit ditangani oleh metode peramalan konvensional. Oleh karena itu, metode peramalan yang digunakan perlu mampu menangkap pola data yang kompleks dan beradaptasi terhadap perubahan permintaan.
+Time Series Forecasting
+Time series forecasting merupakan proses memprediksi nilai masa depan berdasarkan data yang tersusun menurut urutan waktu. Lazcano et al. (2025) menjelaskan bahwa peramalan time series, terutama pada prediksi beberapa horizon ke depan, perlu memperhatikan karakteristik data, jenis model, dan strategi peramalan yang digunakan. Pada penelitian ini, data penjualan harian dalam dataset M5 termasuk ke dalam data time series karena setiap nilai penjualan memiliki keterkaitan dengan periode waktu sebelumnya.
+Data time series umumnya memiliki beberapa pola utama, seperti tren, musiman, siklus, dan noise. Tren menunjukkan arah pergerakan data dalam jangka panjang, sedangkan musiman menunjukkan pola berulang pada periode tertentu, misalnya mingguan, bulanan, atau tahunan. Pada data ritel, pola musiman dapat muncul karena pengaruh akhir pekan, hari libur, event khusus, promosi, perubahan harga, atau kebiasaan belanja konsumen.
+Salah satu karakteristik yang sering muncul pada data permintaan ritel adalah intermittent demand. Giannopoulos et al. (2025) menjelaskan bahwa intermittent demand forecasting berkaitan dengan pola permintaan yang muncul secara tidak teratur dan sering memiliki banyak nilai nol. Kondisi ini membuat proses peramalan menjadi lebih sulit karena model harus mampu membedakan periode tanpa permintaan dan periode dengan lonjakan penjualan. Karakteristik tersebut relevan dengan dataset M5 karena banyak produk memiliki pola penjualan yang jarang dan tidak stabil.
+M5 Forecasting Accuracy Dataset
+M5 Forecasting Accuracy Dataset merupakan dataset peramalan permintaan ritel yang berisi data penjualan harian produk Walmart. Dataset ini digunakan dalam kompetisi M5 Forecasting Accuracy dan banyak dijadikan benchmark dalam penelitian peramalan permintaan. Makridakis et al. (2022) menjelaskan bahwa kompetisi M5 dirancang untuk mengevaluasi kemampuan model dalam memprediksi penjualan ritel pada data berskala besar dan memiliki struktur hierarkis.
+Dataset M5 memiliki karakteristik yang kompleks karena terdiri dari banyak deret waktu dan beberapa level agregasi. Data dapat dianalisis mulai dari level total penjualan, negara bagian, toko, kategori produk, departemen, item, hingga kombinasi item dan toko. Struktur tersebut membuat proses peramalan menjadi lebih menantang karena model tidak hanya perlu menghasilkan prediksi yang baik pada level produk dan toko, tetapi juga perlu mempertahankan performa pada level agregasi yang lebih tinggi.
+Selain data penjualan historis, dataset M5 juga menyediakan data kalender dan data harga jual. Data kalender mencakup informasi tanggal, event, dan indikator SNAP, sedangkan data harga berisi harga produk pada toko dan minggu tertentu. Long et al. (2025) menunjukkan bahwa peramalan ritel berskala besar masih relevan untuk ditangani menggunakan pendekatan berbasis gradient boosted trees. Sementara itu, Mohammed et al. (2026) menekankan bahwa peramalan dalam rantai pasok ritel perlu mempertimbangkan ketidakpastian permintaan agar dapat mendukung perencanaan persediaan. Oleh karena itu, dataset M5 sesuai digunakan dalam penelitian ini karena merepresentasikan permasalahan ritel yang berskala besar, multivariat, dan hierarkis.
+Machine Learning untuk Peramalan
+Machine learning merupakan pendekatan pemodelan yang memungkinkan model mempelajari pola dari data untuk menghasilkan prediksi. Rahman Mahin et al. (2025) menunjukkan bahwa machine learning dapat digunakan dalam prediksi penjualan dan rantai pasok untuk mendukung peningkatan akurasi. Dalam peramalan permintaan, pendekatan ini digunakan untuk mempelajari hubungan antara fitur input, seperti penjualan historis, harga, kalender, event, dan atribut produk, dengan target berupa permintaan pada periode mendatang.
+Keunggulan machine learning terletak pada kemampuannya dalam menangkap hubungan non-linear dan interaksi antar variabel. Dalam data ritel, permintaan produk tidak hanya dipengaruhi oleh riwayat penjualan, tetapi juga oleh harga, event kalender, kategori produk, lokasi toko, dan pola musiman. Hubungan antar faktor tersebut sering kali tidak sederhana, sehingga pendekatan berbasis machine learning menjadi relevan untuk digunakan.
+Pada penelitian ini, machine learning digunakan setelah data M5 diubah menjadi format tabular melalui preprocessing dan feature engineering. Model yang digunakan meliputi LightGBM, XGBoost, dan CatBoost. Ketiga model tersebut dipilih karena dapat memanfaatkan fitur historis, fitur kalender, fitur harga, serta fitur hierarkis dalam proses prediksi.
+Gradient Boosting Decision Tree
+Gradient Boosting Decision Tree atau GBDT merupakan metode berbasis pohon keputusan yang membangun model secara bertahap untuk memperbaiki kesalahan prediksi. Long et al. (2025) menggunakan pendekatan gradient boosted trees dalam peramalan ritel berskala besar dan menunjukkan bahwa pendekatan ini relevan untuk data ritel yang kompleks. Pada GBDT, setiap pohon baru dibangun berdasarkan kesalahan dari model sebelumnya, sehingga prediksi akhir merupakan gabungan dari beberapa pohon keputusan.
+GBDT sesuai digunakan pada data tabular karena mampu menangkap hubungan non-linear serta interaksi antar fitur. Pada data ritel, hubungan antara permintaan dan faktor seperti harga, event, kategori produk, toko, dan riwayat penjualan sering kali berbeda antar kelompok data. Model berbasis pohon dapat membantu mempelajari perbedaan pola tersebut melalui pembagian data berdasarkan fitur tertentu.
+Alsulamy (2025) membandingkan CatBoost, XGBoost, dan LGBM sebagai algoritma machine learning modern pada data terstruktur. Berdasarkan hal tersebut, penelitian ini menggunakan model berbasis GBDT, yaitu LightGBM, XGBoost, dan CatBoost, sebagai model dasar dalam proses peramalan dan ensemble.
+LightGBM
+LightGBM merupakan algoritma gradient boosting berbasis pohon keputusan yang dirancang untuk memproses data tabular berukuran besar secara efisien. Model ini membangun banyak pohon keputusan secara bertahap, di mana setiap pohon baru bertujuan untuk memperbaiki kesalahan dari pohon sebelumnya. Constantin et al. (2025) menunjukkan bahwa LightGBM dapat digunakan dalam peramalan time series dengan memanfaatkan fitur historis, sehingga sesuai untuk data permintaan yang memiliki pola waktu.
+Gambar 2.1 Ilustrasi Pertumbuhan Pohon Leaf-Wise pada LightGBM
+Gambar 2.1 menunjukkan ilustrasi mekanisme pertumbuhan pohon pada LightGBM dengan pendekatan leaf-wise. Pada gambar tersebut, node berwarna hijau menggambarkan leaf yang dipilih untuk dikembangkan pada setiap tahap. So dan Deng (2025) menjelaskan bahwa LightGBM menggunakan strategi pertumbuhan pohon leaf-wise, yaitu model memilih leaf yang memberikan penurunan loss terbesar untuk dikembangkan terlebih dahulu. Strategi ini berbeda dari pendekatan level-wise karena pohon tidak selalu tumbuh secara seimbang pada setiap tingkat. Dengan pendekatan tersebut, LightGBM dapat mempercepat proses pembelajaran dan meningkatkan performa pada data tabular, meskipun kompleksitas model tetap perlu dikendalikan agar tidak menyebabkan overfitting.
+Dalam konteks peramalan permintaan ritel, LightGBM dapat memanfaatkan berbagai fitur seperti lag features, rolling statistics, fitur kalender, fitur harga, serta atribut hierarkis. Fitur-fitur tersebut membantu model mempelajari hubungan antara penjualan historis, perubahan harga, event kalender, dan karakteristik produk atau toko. Long et al. (2025) menunjukkan bahwa pendekatan berbasis gradient boosted trees relevan untuk peramalan ritel berskala besar. Oleh karena itu, LightGBM digunakan sebagai model utama dalam penelitian ini karena sesuai dengan karakteristik dataset M5 yang besar, berbentuk tabular, dan memiliki banyak variabel pendukung.
+XGBoost
+XGBoost atau Extreme Gradient Boosting merupakan algoritma gradient boosting yang menggunakan kumpulan pohon keputusan untuk menghasilkan prediksi akhir. Model ini bekerja secara bertahap dengan menambahkan pohon baru yang bertujuan untuk memperbaiki kesalahan prediksi dari pohon sebelumnya. Dengan demikian, setiap pohon dalam XGBoost tidak berdiri sendiri, tetapi berkontribusi dalam proses pembelajaran ensemble secara berurutan.
+Gambar 2.2 Ilustrasi Proses Gradient Boosting pada XGBoost
+Gambar 2.2 menunjukkan proses kerja XGBoost yang membangun beberapa pohon keputusan secara sekuensial. Pada gambar tersebut, setiap pohon menghasilkan keluaran sementara, kemudian residual atau error dari hasil sebelumnya digunakan sebagai dasar untuk membangun pohon berikutnya. Hani et al. (2024) menjelaskan bahwa XGBoost termasuk algoritma boosting yang membangun model secara bertahap untuk meningkatkan performa prediksi. Konsep ini terlihat pada gambar, di mana hasil dari model sebelumnya digunakan untuk membantu proses pembentukan model berikutnya, kemudian seluruh hasil pohon digabungkan melalui proses weighting untuk menghasilkan prediksi akhir.
+Dalam peramalan permintaan, XGBoost dapat digunakan untuk mempelajari hubungan antara penjualan historis, harga, kalender, event, serta atribut produk dengan permintaan pada periode mendatang. Pada dataset M5, informasi seperti item, store, department, category, sell price, dan calendar event dapat dijadikan fitur untuk membantu model memahami pola permintaan. Alsulamy (2025) membahas XGBoost sebagai salah satu algoritma boosting modern yang dapat dibandingkan dengan LightGBM dan CatBoost pada data terstruktur. Dalam penelitian ini, XGBoost digunakan sebagai model pembanding terhadap LightGBM sekaligus sebagai salah satu sumber prediksi dalam tahap ensemble.
+CatBoost
+CatBoost merupakan algoritma gradient boosting berbasis pohon keputusan yang dikembangkan untuk menangani data tabular, khususnya data yang memiliki banyak fitur kategorikal. Keunggulan utama CatBoost terletak pada kemampuannya dalam memproses fitur kategorikal tanpa memerlukan proses encoding manual yang terlalu kompleks. Dalam konteks ritel, kemampuan ini penting karena data penjualan sering memiliki banyak atribut kategori seperti produk, toko, departemen, kategori, dan wilayah.
+Gambar 2.3 Ilustrasi Proses Boosting Berbasis Base Learners pada CatBoost
+Gambar 2.3 menunjukkan ilustrasi proses boosting pada CatBoost melalui pembentukan beberapa base learner atau predictor. Pada gambar tersebut, dataset digunakan untuk membangun beberapa predictor secara bertahap. Setiap predictor berusaha memperbaiki kelemahan dari proses sebelumnya, kemudian hasil dari beberapa predictor digabungkan untuk menghasilkan prediksi akhir. Elshaarawy (2025) menjelaskan penggunaan CatBoost sebagai model prediktif berbasis gradient boosting yang dapat dikombinasikan dengan optimasi untuk meningkatkan akurasi prediksi. Hal ini sejalan dengan ilustrasi pada gambar, di mana CatBoost dipahami sebagai model ensemble yang membangun beberapa learner untuk menghasilkan prediksi yang lebih kuat.
+Pada dataset M5, variabel seperti item, department, category, store, dan state dapat memengaruhi pola permintaan. Setiap toko atau kategori produk dapat memiliki karakteristik penjualan yang berbeda. Alsulamy (2025) membahas CatBoost sebagai salah satu model boosting modern yang dapat dibandingkan dengan XGBoost dan LightGBM pada data terstruktur. Oleh karena itu, CatBoost digunakan untuk melihat apakah model yang kuat dalam menangani fitur kategorikal dapat memberikan performa kompetitif dibandingkan model boosting lainnya.
+Dalam penelitian ini, CatBoost diposisikan sebagai model pembanding sekaligus sebagai salah satu sumber prediksi pada tahap ensemble bersama LightGBM, XGBoost, dan LSTM. Prediksi dari CatBoost diharapkan dapat menambah keragaman hasil prediksi sehingga proses ensemble dapat menghasilkan performa yang lebih baik dan stabil.
+Deep Learning untuk Peramalan
+Deep learning merupakan pendekatan machine learning yang menggunakan jaringan saraf tiruan berlapis untuk mempelajari pola data yang kompleks. Ahmed et al. (2025) menunjukkan bahwa framework deep learning dapat digunakan dalam peramalan rantai pasok dan dapat dikombinasikan dengan SHAP untuk meningkatkan interpretabilitas model. Pada peramalan time series, deep learning dapat digunakan untuk menangkap pola Temporal dan hubungan non-linear pada data berurutan.
+Model deep learning mempelajari representasi data melalui beberapa lapisan pemrosesan. Dalam konteks peramalan permintaan, pendekatan ini dapat membantu model memahami pola perubahan permintaan dari waktu ke waktu. Namun, deep learning umumnya membutuhkan sumber daya komputasi yang lebih besar dibandingkan model berbasis pohon.
+Pada data ritel berbentuk tabular, model berbasis gradient boosting masih sering menjadi pilihan karena lebih efisien dalam memanfaatkan fitur hasil feature engineering. Oleh karena itu, penelitian ini menggunakan LSTM sebagai representasi model deep learning untuk dibandingkan dengan LightGBM, XGBoost, dan CatBoost.
+Long Short-Term Memory
+Long Short-Term Memory atau LSTM merupakan salah satu jenis recurrent neural network yang dirancang untuk mempelajari pola pada data berurutan. Model ini banyak digunakan dalam peramalan time series karena mampu mempertahankan informasi dari periode sebelumnya dan menggunakannya untuk memprediksi nilai pada periode berikutnya. Ahmed et al. (2025) menunjukkan bahwa pendekatan deep learning dapat digunakan dalam peramalan rantai pasok, sedangkan Samal dan Ghosh (2026) menggunakan pendekatan ensemble berbasis predictive analytics dalam konteks demand forecasting ritel.
+Gambar 2.4 Arsitektur Sel Long Short-Term Memory
+Gambar 2.4 menunjukkan struktur dasar sel LSTM yang terdiri dari cell state, hidden state, forget gate, input gate, dan output gate. Pada gambar tersebut, cell state membawa informasi jangka panjang dari waktu sebelumnya menuju waktu berikutnya. Forget gate menentukan informasi lama yang perlu dipertahankan atau dilupakan, input gate mengatur informasi baru yang akan dimasukkan ke dalam cell state, sedangkan output gate menentukan informasi yang digunakan sebagai keluaran pada time step saat ini. Mohsen et al. (2021) menjelaskan bahwa LSTM memiliki kemampuan untuk menangani data berurutan melalui mekanisme gate yang mengontrol aliran informasi. Mekanisme ini membuat LSTM lebih mampu menangkap ketergantungan temporal dibandingkan recurrent neural network sederhana.
+Dalam peramalan permintaan ritel, LSTM digunakan untuk menangkap pola waktu dari data penjualan historis. Model ini dapat mempelajari hubungan antarperiode, seperti pola mingguan, musiman, atau perubahan permintaan berdasarkan urutan waktu. Namun, karena dataset M5 juga memiliki banyak fitur tabular dan kategorikal, performa LSTM perlu dibandingkan dengan model berbasis gradient boosting seperti LightGBM, XGBoost, dan CatBoost. Dalam penelitian ini, LSTM digunakan sebagai salah satu model pembanding sekaligus sebagai salah satu sumber prediksi pada tahap ensemble.
+Feature engineering
+Feature engineering merupakan proses membentuk fitur baru dari data mentah agar model dapat mempelajari pola dengan lebih baik. Constantin et al. (2025) menunjukkan bahwa fitur historis dapat mendukung penggunaan LightGBM dalam peramalan time series. Dalam peramalan berbasis machine learning, informasi Temporal perlu diubah menjadi fitur numerik karena model tabular tidak secara langsung memahami urutan waktu apabila data hanya diberikan dalam bentuk tabel biasa.
+Feature engineering membantu model mengenali pola historis, musiman, tren lokal, dan pengaruh variabel eksternal. Fitur yang umum digunakan dalam peramalan permintaan meliputi lag features, rolling Statistics, fitur kalender, fitur harga, dan fitur hierarkis. Pemilihan fitur yang tepat dapat membantu model menangkap pola permintaan yang tidak terlihat dari data mentah.
+Long et al. (2025) menunjukkan bahwa pemanfaatan fitur penting dalam peramalan ritel berskala besar berbasis gradient boosted trees. Pada penelitian ini, feature engineering dilakukan dengan membangun fitur dari data penjualan, kalender, harga, dan hierarki produk agar model dapat mempelajari pola permintaan secara lebih lengkap.
+Lag Features
+Lag features merupakan fitur yang merepresentasikan nilai target pada periode sebelumnya. Constantin et al. (2025) menunjukkan bahwa fitur historis seperti lag dapat digunakan dalam model LightGBM untuk peramalan time series. Dalam peramalan penjualan, fitur ini memberikan informasi mengenai nilai penjualan masa lalu yang dapat berkaitan dengan penjualan pada periode mendatang.
+Lag features dibangun berdasarkan hubungan Temporal dalam data time series. Jika penjualan pada periode sebelumnya memiliki pola tertentu, pola tersebut dapat menjadi informasi bagi model untuk memprediksi permintaan di masa depan. Lag mingguan seperti 7, 14, dan 28 hari dapat membantu menangkap pola mingguan, sedangkan lag jangka panjang seperti 180 atau 364 hari dapat digunakan untuk menangkap pola musiman yang lebih panjang.
+Dalam penelitian ini, lag features digunakan pada strategi recursive dan direct forecasting. Pada recursive forecasting, nilai lag dapat diperbarui menggunakan hasil prediksi sebelumnya. Pada direct forecasting, nilai lag menggunakan data historis aktual tanpa memasukkan hasil prediksi sebelumnya sebagai input.
+Rolling Statistics
+Rolling Statistics merupakan fitur statistik yang dihitung pada jendela waktu tertentu untuk menangkap kondisi lokal dari data time series. Constantin et al. (2025) menunjukkan bahwa transformasi berbasis data historis dapat mendukung performa LightGBM dalam forecasting. Fitur ini dapat berupa rata-rata bergerak, standar deviasi bergerak, nilai maksimum, dan nilai minimum dalam periode tertentu.
+Rolling Statistics membantu model memahami kondisi permintaan dalam rentang waktu tertentu, bukan hanya berdasarkan satu titik observasi. Rolling mean dapat menangkap kecenderungan lokal, rolling standard deviation dapat mengukur volatilitas, sedangkan rolling maximum dan rolling minimum dapat menggambarkan batas atas dan batas bawah permintaan dalam periode tertentu.
+Long et al. (2025) juga menekankan pentingnya penggunaan fitur dalam peramalan ritel berbasis tree-based model. Dalam penelitian ini, rolling Statistics dihitung menggunakan beberapa window, seperti 7, 14, 28, 60, 90, 180, dan 364 hari. Window pendek digunakan untuk menangkap perubahan terbaru, sedangkan window panjang digunakan untuk menangkap pola yang lebih stabil.
+Calendar features dan Price features
+Calendar features merupakan fitur yang dibangun dari informasi waktu, seperti hari, bulan, akhir pekan, event, dan indikator program tertentu. Abolghasemi (2025) menekankan pentingnya pemanfaatan informasi tambahan seperti POS dan order data dalam peramalan hierarkis pada multi-echelon supply chain. Dalam data ritel, fitur kalender digunakan karena permintaan produk dapat dipengaruhi oleh pola musiman, event, dan periode waktu tertentu.
+Price features merupakan fitur yang menggambarkan informasi harga produk. Harga dapat memengaruhi keputusan pembelian konsumen, sehingga perubahan harga, diskon, dan harga relatif dapat menyebabkan perubahan volume penjualan. Oleh karena itu, informasi harga perlu digunakan sebagai fitur tambahan dalam peramalan permintaan ritel.
+Pada penelitian ini, fitur kalender dan harga digunakan agar model tidak hanya bergantung pada data penjualan historis. Fitur yang digunakan mencakup hari dalam minggu, bulan, event, SNAP, harga aktual, perubahan harga, dan indikator diskon. Dengan memasukkan fitur tersebut, model diharapkan dapat menangkap pengaruh faktor eksternal terhadap permintaan.
+Grouped Modeling dan Hierarchical Forecasting
+Grouped modeling merupakan pendekatan pemodelan yang membagi data berdasarkan kelompok tertentu, seperti toko, kategori, departemen, wilayah, atau kombinasi antar level. Zanotti (2025) membahas model global dalam peramalan permintaan ritel, sedangkan Petropoulos, Hollyman, dan Spiliotis (2025) membahas rekonsiliasi forecast melalui sub-hierarki. Kedua penelitian tersebut menunjukkan bahwa struktur kelompok dan hierarki menjadi aspek penting dalam peramalan ritel berskala besar.
+Grouped modeling berkaitan dengan hierarchical forecasting, yaitu peramalan pada data yang tersusun dalam beberapa level agregasi. Pada struktur hierarkis, data pada level bawah dapat dijumlahkan untuk membentuk data pada level atas. Dataset M5 memiliki struktur seperti ini, mulai dari level item-store hingga total penjualan. Oleh karena itu, model perlu mempertimbangkan struktur hierarkis agar hasil prediksi dapat dianalisis pada berbagai level.
+Bandara et al. (2022) menunjukkan bahwa data partitioning dan global model dapat digunakan dalam konteks M5. Teori ini diperkuat oleh Long et al. (2025), yang menunjukkan bahwa peramalan ritel berskala besar dapat dilakukan dengan pendekatan gradient boosted trees. Pada penelitian ini, grouped modeling dilakukan berdasarkan store, store-category, dan store-department.
+Multi-Horizon Forecasting
+Multi-horizon forecasting merupakan proses memprediksi lebih dari satu periode ke depan. Lazcano et al. (2025) menjelaskan bahwa strategi multi-horizon forecasting perlu disesuaikan dengan karakteristik data, model, dan horizon prediksi. Dalam penelitian ini, horizon prediksi yang digunakan adalah 28 hari sesuai dengan format M5 Forecasting Accuracy.
+Multi-horizon forecasting lebih kompleks dibandingkan one-step forecasting karena model harus mempertahankan akurasi pada beberapa titik waktu ke depan. Semakin panjang horizon prediksi, semakin besar kemungkinan error meningkat. Oleh karena itu, strategi yang digunakan dalam multi-horizon forecasting perlu dipilih berdasarkan karakteristik data dan tujuan prediksi.
+Pada penelitian ini, dua strategi yang dibandingkan adalah recursive forecasting dan direct forecasting. Perbandingan dilakukan untuk melihat strategi mana yang lebih sesuai dalam menghasilkan prediksi permintaan ritel selama 28 hari ke depan.
+Recursive Forecasting
+Recursive forecasting merupakan strategi multi-horizon forecasting yang menggunakan satu model untuk menghasilkan prediksi beberapa periode ke depan secara berurutan. In dan Jung (2022) menunjukkan bahwa recursive forecasting dapat digabungkan dengan direct forecasting dalam pendekatan M5. Pada strategi recursive, prediksi pada horizon pertama digunakan sebagai input untuk memprediksi horizon berikutnya.
+Recursive forecasting memiliki keunggulan dari sisi efisiensi karena hanya membutuhkan satu model untuk beberapa horizon. Strategi ini juga dapat mempertahankan hubungan antar horizon karena hasil prediksi sebelumnya digunakan kembali dalam proses prediksi berikutnya. Namun, kelemahan utamanya adalah risiko error propagation, yaitu kesalahan pada prediksi awal dapat terbawa ke prediksi selanjutnya.
+Lazcano et al. (2025) memberikan pembahasan lebih baru bahwa strategi multi-horizon perlu dianalisis berdasarkan karakteristik error dan horizon prediksi. Oleh karena itu, recursive forecasting digunakan dalam penelitian ini untuk melihat apakah strategi yang lebih efisien dapat menghasilkan prediksi yang akurat dan stabil pada dataset M5.
+Direct Forecasting
+Direct forecasting merupakan strategi multi-horizon forecasting yang membangun model terpisah untuk setiap horizon prediksi. In dan Jung (2022) menunjukkan bahwa direct forecasting dapat digabungkan dengan recursive forecasting dalam pendekatan averaging pada M5. Pada strategi direct, prediksi pada satu horizon tidak digunakan sebagai input untuk horizon berikutnya, sehingga risiko error propagation dapat dikurangi.
+Direct forecasting memungkinkan setiap model mempelajari karakteristik horizon tertentu. Misalnya, pola prediksi hari pertama dapat berbeda dari pola prediksi hari ke-28. Namun, strategi ini membutuhkan sumber daya komputasi yang lebih besar karena jumlah model yang dilatih lebih banyak.
+Penelitian terbaru oleh Lazcano et al. (2025) memperkuat bahwa strategi multi-horizon perlu dibandingkan secara empiris karena setiap strategi memiliki trade-off. Oleh karena itu, penelitian ini membandingkan direct dan recursive forecasting dalam konteks prediksi 28 hari pada dataset M5.
+Ensemble Learning
+Ensemble learning merupakan pendekatan yang menggabungkan beberapa model untuk menghasilkan prediksi akhir. Seyam et al. (2025) menggunakan stacking ensemble dengan beberapa base learner dan Ridge Regression sebagai meta-learner dalam peramalan permintaan. Samal dan Ghosh (2026) juga menunjukkan bahwa ensemble-based predictive analytics dapat diterapkan dalam peramalan permintaan ritel multi-channel.
+Ensemble bertujuan memanfaatkan keberagaman model. Jika beberapa model memiliki pola kesalahan yang berbeda, kombinasi prediksi dapat menghasilkan prediksi yang lebih stabil dan akurat dibandingkan satu model tunggal. Dalam peramalan permintaan, ensemble dapat dilakukan dengan menggabungkan beberapa algoritma seperti LightGBM, XGBoost, CatBoost, dan LSTM, atau menggabungkan beberapa strategi forecasting seperti recursive dan direct.
+Mohammed et al. (2026) menunjukkan bahwa hybrid forecasting dapat digunakan untuk menghadapi ketidakpastian permintaan dan mendukung perencanaan persediaan adaptif. Pada penelitian ini, ensemble digunakan untuk menggabungkan prediksi dari beberapa model dan strategi forecasting agar menghasilkan prediksi akhir yang lebih akurat dan stabil.
+Optimized Weighted Ensemble
+Optimized Weighted ensemble merupakan teknik ensemble yang menggabungkan prediksi beberapa model dengan bobot tertentu. Mohammed et al. (2026) menunjukkan bahwa pendekatan hybrid dalam forecasting dapat membantu menghadapi ketidakpastian permintaan, sedangkan Samal dan Ghosh (2026) menunjukkan bahwa ensemble dapat diterapkan dalam peramalan permintaan ritel. Dalam weighted ensemble, setiap model tidak harus memiliki kontribusi yang sama terhadap prediksi akhir.
+Model dengan performa validasi lebih baik dapat diberikan bobot yang lebih besar, sedangkan model dengan performa lebih rendah dapat diberikan bobot yang lebih kecil. Pendekatan ini digunakan untuk memanfaatkan keunggulan model yang berbeda. Jika satu model lebih baik dalam menangkap pola tertentu, model tersebut dapat berkontribusi lebih besar terhadap prediksi akhir.
+Prediksi akhir dapat dirumuskan sebagai berikut:
+dengan ŷ_final sebagai prediksi akhir, ŷᵢ sebagai prediksi model ke-i, dan wᵢ sebagai bobot model ke-i. Dalam penelitian ini, bobot dicari berdasarkan performa validasi dengan tujuan meminimalkan nilai WRMSSE.
+Stacking Ensemble dengan Ridge Regression
+Stacking ensemble merupakan metode ensemble yang menggunakan prediksi model dasar sebagai input bagi model tingkat kedua atau meta-learner. Seyam et al. (2025) menunjukkan bahwa stacking ensemble dengan Ridge Regression dapat digunakan dalam peramalan permintaan makanan. Pada pendekatan ini, meta-learner mempelajari hubungan antara prediksi model dasar dan target aktual.
+Berbeda dengan weighted averaging, stacking memungkinkan model tingkat kedua mempelajari kombinasi prediksi yang lebih fleksibel. Dalam penelitian ini, Ridge Regression digunakan sebagai meta-learner karena memiliki regularisasi L2 yang dapat membantu mengurangi risiko overfitting ketika jumlah prediksi model dasar cukup banyak.
+Prediksi dari LightGBM, XGBoost, CatBoost, dan LSTM pada strategi recursive dan direct forecasting digunakan sebagai input stacking. Hasil stacking kemudian dibandingkan dengan Optimized Weighted ensemble untuk menentukan pendekatan ensemble yang menghasilkan performa terbaik.
+Time-Based Validation
+Time-based validation merupakan teknik validasi yang mempertahankan urutan waktu dalam pembagian data training dan validation. Lazcano et al. (2025) menjelaskan bahwa evaluasi multi-horizon forecasting perlu mempertimbangkan strategi dan karakteristik horizon prediksi. Pada data time series, pembagian data secara acak tidak sesuai karena dapat menyebabkan informasi masa depan masuk ke proses training.
+Model forecasting seharusnya dilatih menggunakan data masa lalu dan diuji pada data masa depan. Oleh karena itu, pembagian training dan validation harus mengikuti urutan kronologis. Pendekatan ini meniru kondisi nyata ketika model digunakan untuk memprediksi permintaan pada periode berikutnya.
+Pada penelitian ini, data historis digunakan sebagai training set, sedangkan 28 hari terakhir digunakan sebagai validation atau test set. Selain itu, time-based cross-validation digunakan untuk melihat konsistensi model pada beberapa periode validasi. Hasil validasi digunakan untuk memilih model terbaik dan menentukan bobot pada tahap ensemble.
+Metrik Evaluasi Forecasting
+Metrik evaluasi forecasting merupakan ukuran yang digunakan untuk menilai seberapa dekat hasil prediksi model dengan nilai aktual. Lazcano et al. (2025) menggunakan evaluasi error dalam konteks multi-horizon forecasting untuk membandingkan performa model pada beberapa horizon prediksi. Dalam forecasting, metrik yang umum digunakan antara lain RMSE, MAE, MAPE, dan WRMSSE.
+Setiap metrik memiliki fokus yang berbeda. RMSE memberikan penalti lebih besar terhadap error besar karena menggunakan kuadrat error. MAE mengukur rata-rata error absolut sehingga lebih mudah diinterpretasikan. MAPE mengukur error dalam bentuk persentase, tetapi dapat bermasalah ketika nilai aktual bernilai nol.
+Godahewa et al. (2025) menunjukkan bahwa evaluasi model forecasting tidak hanya perlu memperhatikan nilai error, tetapi juga stabilitas prediksi. Pada penelitian ini, WRMSSE digunakan sebagai metrik utama, sedangkan RMSE, MAE, dan MAPE digunakan sebagai metrik pendukung.
+Weighted Root Mean Squared Scaled Error
+Weighted Root Mean Squared Scaled Error atau WRMSSE merupakan metrik evaluasi yang digunakan pada kompetisi M5 Forecasting Accuracy. Makridakis et al. (2022) menggunakan WRMSSE sebagai metrik utama karena dataset M5 memiliki banyak level hierarki dan skala penjualan yang berbeda. Metrik ini menggabungkan konsep scaled error dan pembobotan berdasarkan kontribusi series.
+Scaled error digunakan agar error dari series dengan skala berbeda dapat dibandingkan secara lebih adil. Pembobotan digunakan agar series yang lebih penting secara bisnis memiliki pengaruh lebih besar dalam evaluasi. Dengan demikian, WRMSSE sesuai untuk dataset hierarkis seperti M5 karena evaluasi tidak hanya dilakukan pada satu level data.
+Pada penelitian ini, WRMSSE digunakan untuk mengevaluasi akurasi model pada seluruh struktur hierarki M5. Semakin rendah nilai WRMSSE, semakin baik performa model dalam menghasilkan prediksi.
+SHAP untuk Interpretabilitas Model
+SHAP atau SHapley Additive exPlanations merupakan metode interpretabilitas model yang digunakan untuk menjelaskan kontribusi setiap fitur terhadap hasil prediksi. Ahmed et al. (2025) menunjukkan bahwa SHAP dapat digunakan dalam framework peramalan rantai pasok untuk meningkatkan interpretabilitas model. Dalam konteks machine learning, SHAP membantu menjelaskan fitur mana yang menaikkan atau menurunkan hasil prediksi.
+Interpretabilitas penting karena model machine learning yang kompleks sering kali sulit dipahami. Model seperti LightGBM, XGBoost, CatBoost, dan LSTM dapat menghasilkan prediksi yang akurat, tetapi pengguna tetap perlu mengetahui faktor apa saja yang memengaruhi hasil prediksi.
+Pada penelitian ini, SHAP digunakan untuk menganalisis kontribusi fitur seperti lag, rolling Statistics, harga, kalender, event, SNAP, store, category, dan department terhadap hasil prediksi. Analisis ini membantu menjelaskan faktor-faktor yang paling berpengaruh terhadap permintaan ritel.
+Stability Analysis
+Stability analysis merupakan analisis yang digunakan untuk menilai konsistensi performa model pada berbagai kondisi pengujian. Godahewa et al. (2025) menjelaskan bahwa stabilitas forecast merupakan aspek penting dalam evaluasi model forecasting. Model forecasting yang baik tidak hanya memiliki nilai error rendah, tetapi juga perlu menghasilkan performa yang konsisten pada periode validasi, kelompok data, dan horizon prediksi yang berbeda.
+Stabilitas diperlukan karena model yang hanya baik pada satu periode validasi belum tentu dapat diandalkan pada periode lain. Evaluasi yang hanya berfokus pada nilai error rata-rata dapat mengabaikan kondisi ketika model memiliki performa tidak konsisten pada kelompok atau horizon tertentu.
+Pada penelitian ini, stability analysis dilakukan pada tiga aspek. Pertama, stabilitas antar cross-validation folds untuk melihat konsistensi performa model pada periode validasi yang berbeda. Kedua, stabilitas antar kelompok data untuk melihat apakah model bekerja baik pada level store, category, dan department. Ketiga, stabilitas antar horizon prediksi untuk melihat apakah model tetap akurat dari hari ke-1 sampai hari ke-28.
+RELATED WORKS
+Penelitian Penelitian mengenai peramalan permintaan ritel telah berkembang pesat seiring meningkatnya kebutuhan perusahaan dalam mengoptimalkan persediaan dan rantai pasok. Berbagai pendekatan telah digunakan, mulai dari metode statistik tradisional hingga machine learning, deep learning, dan ensemble learning.
+Penelitian oleh Makridakis et al. (2022) melalui kompetisi M5 Forecasting Accuracy menunjukkan bahwa metode berbasis machine learning dan feature engineering mampu menghasilkan performa yang sangat baik pada data penjualan ritel berskala besar. Kompetisi ini menjadi benchmark penting dalam penelitian retail demand forecasting karena menyediakan dataset Walmart yang memiliki struktur hierarkis dan karakteristik intermittent demand.
+Selanjutnya, Bandara et al. (2022) mengembangkan pendekatan ensemble global models pada kompetisi M5 Forecasting. Hasil penelitian menunjukkan bahwa kombinasi beberapa model forecasting mampu meningkatkan akurasi prediksi sekaligus mempertahankan skalabilitas pada data berskala besar. Penelitian ini membuktikan bahwa ensemble learning merupakan pendekatan yang efektif untuk meningkatkan performa forecasting.
+Dalam konteks penggunaan model machine learning, Constantin et al. (2025) mengevaluasi penggunaan LightGBM untuk forecasting time series pada kondisi keterbatasan data. Hasil penelitian menunjukkan bahwa LightGBM mampu menghasilkan prediksi yang kompetitif dengan memanfaatkan lag features dan rolling statistics, sehingga menjadi salah satu algoritma yang potensial untuk diterapkan pada forecasting permintaan ritel.
+Penelitian oleh Ahmed et al. (2025) mengembangkan framework forecasting rantai pasok berbasis deep learning yang dikombinasikan dengan SHAP untuk meningkatkan interpretabilitas model. Hasil penelitian menunjukkan bahwa pendekatan deep learning mampu menangkap pola non-linear yang kompleks serta memberikan penjelasan mengenai kontribusi setiap fitur terhadap hasil prediksi.
+Terkait strategi multi-step forecasting, In dan Jung (2022) membandingkan pendekatan direct forecasting dan recursive forecasting serta mengombinasikan keduanya melalui teknik averaging. Hasil penelitian menunjukkan bahwa kombinasi kedua strategi mampu menghasilkan performa yang lebih baik dibandingkan penggunaan satu strategi secara terpisah.
+Penelitian serupa dilakukan oleh Lazcano et al. (2025) yang membandingkan berbagai pendekatan multi-horizon forecasting menggunakan neural network dengan adaptive preprocessing. Hasil penelitian menunjukkan bahwa setiap strategi memiliki keunggulan dan kelemahan masing-masing sehingga pemilihan strategi forecasting perlu disesuaikan dengan karakteristik data dan horizon prediksi.
+Dalam bidang ensemble learning, Seyam et al. (2025) mengembangkan model stacking ensemble untuk forecasting permintaan makanan. Hasil penelitian menunjukkan bahwa pendekatan stacking mampu meningkatkan akurasi prediksi dibandingkan model tunggal karena memanfaatkan keunggulan dari beberapa algoritma secara bersamaan.
+Selanjutnya, Samal dan Ghosh (2026) mengusulkan pendekatan ensemble-based predictive analytics untuk forecasting permintaan pada lingkungan ritel multi-channel. Penelitian tersebut menunjukkan bahwa ensemble learning mampu menghasilkan prediksi yang lebih stabil dan akurat dibandingkan model individu.
+Selain itu, Mohammed et al. (2026) mengembangkan framework hybrid learning untuk forecasting dan perencanaan inventaris adaptif pada rantai pasok ritel. Hasil penelitian menunjukkan bahwa kombinasi beberapa model forecasting dapat meningkatkan robustness sistem terhadap ketidakpastian permintaan.
+Terakhir, Godahewa et al. (2025) meneliti aspek forecast stability dan menunjukkan bahwa akurasi yang tinggi saja tidak cukup untuk menentukan kualitas model forecasting. Stabilitas performa pada berbagai periode pengujian juga menjadi faktor penting dalam mengevaluasi model forecasting modern.
+Berdasarkan penelitian-penelitian terdahulu tersebut, dapat disimpulkan bahwa machine learning, deep learning, dan ensemble learning memiliki potensi besar untuk meningkatkan akurasi peramalan permintaan ritel. Namun, masih terdapat keterbatasan penelitian yang secara khusus mengombinasikan model LightGBM, XGBoost, CatBoost, dan LSTM dengan strategi recursive dan non-recursive forecasting pada dataset M5 Forecasting. Oleh karena itu, penelitian ini berfokus pada pengembangan model ensemble forecasting untuk meningkatkan akurasi dan stabilitas prediksi permintaan ritel.
+BAB 3
+METODE PENELITIAN
+KERANGKA BERPIKIR
+Penelitian ini dirancang dalam dua belas tahap yang saling terkait secara sistematis dan mengalir dari pengumpulan data hingga output prediksi akhir. Diagram alur penelitian disajikan pada Gambar 1. Berikut adalah uraian setiap tahap.
+Gambar 1. Kerangka Berpikir Penelitian
+Penelitian dilaksanakan melalui dua belas tahap utama yang saling terkait secara sistematis:
+Tahap 1: Pengumpulan Dataset (M5)
+Tahap awal meliputi pengunduhan dan inventarisasi tiga komponen utama dataset M5 Forecasting Accuracy dari platform Kaggle, yaitu: data penjualan historis harian (sales_train_evaluation.csv), data kalender beserta informasi event dan program SNAP (calendar.csv), serta data harga jual mingguan per item per toko (sell_prices.csv). Dataset ini mencakup 30.490 deret waktu penjualan unit produk Walmart yang terstruktur secara hierarkis pada 12 level agregasi.
+Tahap 2: Analisis Data Eksploratoris (EDA)
+Sebelum preprocessing, dilakukan eksplorasi menyeluruh terhadap karakteristik dataset, mencakup analisis distribusi nilai penjualan, identifikasi proporsi nilai nol sebagai indikator intermittent demand, visualisasi pola musiman mingguan dan tahunan, serta pemahaman terhadap struktur hierarkis 12 level. Tahap ini menjadi landasan dalam menentukan strategi preprocessing, pemilihan fitur, dan fungsi objektif model.
+Tahap 3: Pembagian Data (Data Splitting)
+Pembagian data dilakukan sebelum feature engineering sebagai langkah kritis untuk mencegah data leakage. Data dibagi secara kronologis menjadi training set (data historis) dan test set (28 hari terakhir). Selain itu, dirancang empat fold cross-validation berbasis waktu (time-series CV) yang digunakan pada seluruh tahap evaluasi dan pemilihan model.
+Tahap 4: Data Preprocessing
+Data mentah diproses melalui serangkaian langkah pembersihan, penanganan nilai hilang, encoding variabel kategorikal, dan transformasi format wide-to-long. Seluruh statistik dan parameter preprocessing dihitung secara eksklusif dari training set kemudian diterapkan ke test set untuk menghindari kebocoran informasi.
+Tahap 5: Feature Engineering
+Fitur prediktif dibangun dari data yang telah diproses, mencakup lag features, rolling Statistics, calendar features, price features, dan group features. Setiap fitur dibangun dengan mekanisme shift Temporal yang ketat sehingga tidak mengandung informasi dari periode yang sedang diprediksi (no lookahead). Detail penanganan data leakage dipaparkan secara eksplisit pada subbab tersendiri.
+Tahap 6: Strategi Group Modeling
+Dataset dibagi ke dalam kelompok-kelompok berdasarkan struktur hierarkis: by store (10 kelompok), by store + category (30 kelompok), dan by store + department (70 kelompok). Pemodelan dilakukan secara terpisah per kelompok untuk menangkap karakteristik pola permintaan yang spesifik pada tiap kelompok.
+Tahap 7: Model Training
+Empat model dasar dilatih pada setiap kelompok dengan dua strategi forecasting: LightGBM, XGBoost, dan CatBoost (berbasis gradient boosting), serta LSTM (berbasis deep learning). Masing-masing model dijalankan dengan strategi recursive forecasting dan direct/non-recursive forecasting, menghasilkan total kombinasi model yang dievaluasi secara sistematis.
+Tahap 8: Model Evaluation
+Setiap model dievaluasi menggunakan empat fold cross-validation berbasis waktu. Metrik utama adalah WRMSSE, dengan RMSE, MAE, dan MAPE sebagai metrik pendukung. Hasil evaluasi berupa mean dan standar deviasi WRMSSE antar fold untuk mengukur akurasi sekaligus stabilitas masing-masing model.
+Tahap 9: Best Model Selection
+Model-model terbaik dipilih berdasarkan combined score yang mempertimbangkan rata-rata dan standar deviasi WRMSSE antar fold. Model dengan akurasi tinggi sekaligus stabilitas baik diprioritaskan sebagai kandidat ensemble.
+Tahap 10: Ensemble Model
+Model-model terpilih digabungkan menggunakan dua strategi ensemble: (a) Optimized Weighted Ensemble yang mengoptimalkan bobot masing-masing model untuk meminimalkan WRMSSE pada data validasi, dan (b) Stacking Ensemble dengan Ridge Regression sebagai meta-learner yang dilatih menggunakan out-of-fold predictions hasil time-series cross-validation.
+Tahap 11: Final Evaluation
+Sistem forecasting final dievaluasi secara komprehensif mencakup: perbandingan performa ensemble vs model tunggal, uji signifikansi statistik menggunakan Diebold-Mariano Test, analisis interpretabilitas fitur menggunakan SHAP, serta stability analysis pada tiga dimensi: antar fold, antar kelompok hierarkis, dan antar horizon prediksi (hari 1 hingga 28).
+Tahap 12: Output Prediksi 28 Hari
+Sistem menghasilkan prediksi akhir untuk horizon 28 hari ke depan pada seluruh 30.490 deret waktu level produk-toko, yang kemudian diagregasi secara bottom-up ke 11 level hierarki di atasnya sesuai struktur dataset M5.
+METODE PENELITIAN
+Tahap Pengumpulan Dataset
+Dataset yang digunakan dalam penelitian ini adalah M5 Forecasting Accuracy Dataset yang bersumber dari kompetisi M5 Forecasting Accuracy yang diselenggarakan oleh Makridakis Open Forecasting Center (MOFC) pada tahun 2020. Dataset ini merepresentasikan data penjualan harian unit produk Walmart dan merupakan salah satu benchmark peramalan permintaan ritel berskala besar yang paling banyak digunakan dalam literatur (Makridakis et al., 2022). Dataset terdiri dari tiga file utama:
+sales_train_evaluation.csv: Berisi 30.490 baris yang merepresentasikan kombinasi unik item-toko, dengan 1.941 kolom penjualan harian (d_1 hingga d_1941) mencakup periode 29 Januari 2011 hingga 19 Juni 2016.
+calendar.csv: Berisi informasi kalender harian mencakup hari, bulan, tahun, event khusus (event_name_1/2, event_type_1/2), serta indikator program SNAP (snap_CA, snap_TX, snap_WI).
+sell_prices.csv: Berisi harga jual rata-rata mingguan untuk setiap kombinasi item-toko dalam format (store_id, item_id, wm_yr_wk, sell_price).
+Dataset M5 memiliki struktur hierarkis yang terdiri dari 12 level agregasi sebagaimana disajikan pada Tabel 1.
+Level
+Deskripsi
+Jumlah Series
+1
+Total semua penjualan
+1
+2
+Per state_id
+3
+3
+Per store_id
+10
+4
+Per cat_id
+3
+5
+Per dept_id
+7
+6
+Per state_id + cat_id
+9
+7
+Per state_id + dept_id
+21
+8
+Per store_id + cat_id
+30
+9
+Per store_id + dept_id
+70
+10
+Per item_id
+3.049
+11
+Per state_id + item_id
+9.147
+12
+Per store_id + item_id (level terendah)
+30.490
+Tabel 1 Struktur Hierarkis Dataset M5
+Tahap Exploratory Data Analysis (EDA)
+Analisis data eksploratoris (Exploratory Data Analysis/EDA) dilakukan sebelum preprocessing untuk membangun pemahaman yang mendalam terhadap karakteristik dataset. Aspek-aspek yang dianalisis meliputi:
+Analisis distribusi penjualan: Mengidentifikasi proporsi nilai nol, skewness distribusi, dan karakteristik intermittent demand pada level item-toko.
+Analisis pola Temporal: Dekomposisi time series untuk mengidentifikasi komponen tren, musiman mingguan, musiman tahunan, dan residu pada berbagai level hierarki.
+Analisis korelasi harga-penjualan: Mengidentifikasi pengaruh perubahan harga dan event terhadap volume penjualan.
+Analisis missing pattern: Memetakan pola nilai hilang pada data harga untuk menentukan strategi imputasi yang tepat.
+Tahap Pembagian Data (Data Splitting)
+Pembagian data merupakan tahap yang harus dilakukan sebelum feature engineering. Urutan ini bersifat kritis dan tidak boleh dibalik: melakukan feature engineering sebelum Data Splitting akan menyebabkan informasi dari periode test set merembes ke training set melalui statistik agregat, yang dikenal sebagai data leakage (Bergmeir et al., 2018).
+Pembagian Training-Test
+Data dibagi secara kronologis berdasarkan urutan waktu sebagai berikut:
+Training set: d_1 hingga d_1913 (sekitar 80% data historis)
+Test set (Public): d_1914 hingga d_1941 (28 hari terakhir yang tersedia, setara dengan periode evaluasi kompetisi M5)
+Desain Cross-validation Berbasis Waktu
+Untuk evaluasi yang lebih robust, dirancang empat fold validasi silang berbasis waktu (time-series cross-validation) dengan skema expanding window sebagaimana disajikan pada Tabel 2. Penggunaan empat fold mengikuti praktik terbaik pemenang kompetisi M5 yang menggunakan minimal empat window validasi untuk mengukur baik akurasi rata-rata maupun variansi performa antar periode (In & Jung, 2022).
+Tabel 2. Desain Cross-validation Berbasis Waktu
+Fold
+Periode Training
+Periode Validasi
+Panjang Horizon
+CV0
+d_1 – d_1801
+d_1802 – d_1829
+28 hari
+CV1
+d_1 – d_1829
+d_1830 – d_1857
+28 hari
+CV2
+d_1 – d_1857
+d_1858 – d_1885
+28 hari
+CV3
+d_1 – d_1885
+d_1886 – d_1913
+28 hari
+Test
+d_1 – d_1913
+d_1914 – d_1941
+28 hari
+Skema expanding window dipilih karena semakin banyak data historis yang tersedia, semakin baik kemampuan model dalam mengenali pola jangka panjang. Fold CV0 ditambahkan untuk meningkatkan reliabilitas estimasi standar deviasi WRMSSE antar fold.
+Tahap Data Preprocessing
+Preprocessing dilakukan dalam urutan yang terstruktur. Seluruh statistik yang dibutuhkan seperti rata-rata, modus, dan frekuensi label dihitung eksklusif dari training set pada masing-masing fold, kemudian diterapkan (transform) ke validation set dan test set. Pendekatan ini mencegah kebocoran informasi dari periode validasi ke proses pelatihan.
+Penggabungan Dataset
+Ketiga file dataset digabungkan melalui operasi join. Data penjualan dalam format wide (satu kolom per hari) ditransformasi ke format long (satu baris per observasi hari-item-toko) menggunakan operasi melt, menghasilkan sekitar 58 juta baris observasi yang siap diproses.
+Data Cleaning
+Pemeriksaan dan penghapusan data duplikat berdasarkan kombinasi kunci (id, date).
+Identifikasi dan koreksi inkonsistensi nilai pada variabel kategorikal (store_id, item_id, dept_id, cat_id, state_id).
+Validasi rentang nilai numerik: nilai penjualan harus berupa bilangan bulat non-negatif.
+Handling Missing Values
+Harga (sell_price): Diisi dengan forward fill berdasarkan urutan waktu per item-toko, kemudian backward fill untuk produk yang belum memiliki riwayat harga.
+Event kalender: Nilai kosong diisi dengan string 'No_Event' untuk event_name dan 'No_Type' untuk event_type, sehingga dapat di-encode sebagai kategori tersendiri.
+Fitur lag dan rolling pada periode awal (burn-in period): Diisi dengan nilai nol, dengan asumsi bahwa produk belum memiliki riwayat penjualan sebelum tanggal pertama aktivasinya.
+Encoding Categorical Variable
+Label Encoding: Digunakan untuk variabel dengan banyak kategori unik (item_id, dept_id, cat_id, store_id, state_id). Mapping label dihitung dari training set dan diterapkan konsisten ke seluruh split.
+One-Hot Encoding: Digunakan untuk variabel event_type yang memiliki sedikit kategori dan tidak memiliki urutan ordinal.
+Mean Encoding (Target Encoding): Digunakan untuk variabel hierarkis tertentu, dengan Bayesian smoothing menggunakan formula:
+di mana n_i adalah jumlah observasi pada kategori i, mean_i adalah rata-rata target pada kategori tersebut, m adalah parameter smoothing (m = 5 digunakan sebagai default), dan global_mean adalah rata-rata target keseluruhan. Mean Encoding dihitung eksklusif dari training set untuk mencegah target leakage.
+Tahap Feature Engineering
+Feature engineering merupakan tahap pembangunan fitur prediktif dari data yang telah diproses. Semua fitur dirancang dengan prinsip no lookahead: tidak ada fitur yang menggunakan informasi dari periode yang sedang diprediksi atau periode di masa depan. Prinsip ini diimplementasikan melalui operator shift Temporal yang ketat.
+Prinsip Pencegahan Data leakage pada Feature engineering
+Data leakage pada feature engineering adalah kondisi di mana informasi dari masa depan (atau dari data validasi/test) merembes ke dalam fitur training, sehingga model mendapatkan keuntungan yang tidak realistis dan menghasilkan estimasi performa yang terlalu optimistis (Kaufman et al., 2012). Pada penelitian ini, dua mekanisme utama diterapkan untuk mencegah data leakage:
+Temporal Shifting pada Lag features
+Setiap lag feature dibangun dengan menggeser nilai target sebanyak k hari ke belakang menggunakan operasi shift(k), di mana k merupakan besarnya lag. Sebagai contoh, lag_7 untuk baris pada hari t menggunakan nilai penjualan pada hari t-7, bukan pada hari t. Hal ini memastikan bahwa pada saat model memprediksi hari t, semua fitur lag hanya mengandung informasi dari hari t-1 ke belakang. Secara formal:
+Nilai lag pada periode awal (di mana t - k < 1) diisi dengan nilai nol, merepresentasikan kondisi sebelum produk dijual.
+Temporal Shifting pada Rolling Statistics
+Rolling Statistics dihitung pada jendela waktu yang berakhir paling lambat satu hari sebelum periode prediksi. Implementasinya menggunakan kombinasi shift(1) sebelum rolling window, sehingga rolling mean pada hari t dihitung dari  bukan dari . Secara formal:
+Tanpa shift(1), rolling Statistics pada hari t akan mencakup nilai sales(t) yang sedang diprediksi, sehingga terjadi lookahead leakage. Verifikasi pencegahan leakage dilakukan dengan cara memeriksa bahwa korelasi antara fitur rolling dan target pada lag nol (hari yang sama) lebih rendah dari korelasi pada lag satu ke belakang.
+Fitting Preprocessing Hanya pada Training set
+Seluruh parameter yang diestimasi dari data termasuk rata-rata untuk mean encoding, nilai median untuk imputasi, dan statistik normalisasi untuk LSTM hanya dihitung dari data training pada masing-masing fold. Parameter tersebut kemudian diterapkan (transform-only, bukan fit-transform) ke validation set dan test set. Pola ini mengikuti prinsip pipeline yang aman secara metodologis (Raschka, 2018).
+Lag Features
+Lag features merepresentasikan nilai penjualan historis pada periode-periode sebelumnya. Fitur ini dibangun dengan rentang lag sebagai berikut:
+Lag mingguan: 7, 14, 21, 28, 35, 42, 49, 56, 63, 70, 77, 84 hari
+Lag bulanan: 90, 180 hari
+Lag tahunan: 364 hari
+Lag tahunan (364 hari) digunakan sebagai pengganti 365 hari karena dataset M5 memiliki siklus mingguan yang kuat, sehingga pola pada hari ke-364 (52 minggu penuh) lebih representatif dibanding hari ke-365 yang dapat jatuh pada hari berbeda dalam seminggu.
+Rolling Statistic
+Rolling Statistics dibangun dengan window {7, 14, 28, 60, 90, 180, 364} hari, masing-masing mencakup:
+rolling_mean_w: Rata-rata bergerak untuk menangkap tren lokal
+rolling_std_w: Standar deviasi bergerak sebagai proksi volatilitas permintaan
+rolling_max_w: Nilai maksimum bergerak untuk menangkap puncak permintaan
+rolling_min_w: Nilai minimum bergerak untuk menangkap batas bawah permintaan
+Window pendek (7–28 hari) menangkap perubahan permintaan jangka pendek, sedangkan window panjang (180–364 hari) menangkap pola musiman jangka panjang.
+Calendar Features
+Fitur kalender dibangun dari data calendar.csv untuk membantu model mengenali pengaruh waktu terhadap permintaan:
+year, month, week, day: Komponen tanggal yang di-encode sebagai bilangan bulat
+dayofweek: Hari dalam minggu (0 = Senin, 6 = Minggu)
+is_weekend: Variabel biner yang bernilai 1 untuk Sabtu dan Minggu
+event_name_1, event_type_1: Informasi event khusus yang telah di-encode
+snap: Indikator program SNAP yang disesuaikan dengan state_id masing-masing observasi
+days_to_event: Jarak hari ke event terdekat, sebagai fitur antisipasi permintaan pra-event
+Price Features
+Fitur harga dibangun dari data sell_prices.csv untuk menangkap pengaruh dinamika harga terhadap volume penjualan:
+sell_price: Harga jual aktual produk pada minggu tersebut
+price_mean: Rata-rata harga historis per item-toko, dihitung dari training set
+price_norm: Rasio harga aktual terhadap rata-rata historis (sell_price / price_mean)
+price_cat_avg: Rata-rata harga produk dalam kategori yang sama di toko yang sama pada minggu tersebut
+price_cat_ratio: Rasio harga produk terhadap rata-rata kategori, menangkap posisi kompetitif harga
+price_change: Selisih harga dengan minggu sebelumnya menggunakan diff(1)
+price_changed: Indikator biner apakah terjadi perubahan harga
+is_discounted: Indikator biner apakah harga aktual lebih rendah dari rata-rata historis
+Group features
+Fitur grup merepresentasikan atribut hierarkis produk dan toko yang berfungsi sebagai konteks kontekstual bagi model:
+item_id, dept_id, cat_id, store_id, state_id: Identifikasi hierarkis yang telah di-encode
+store_cat: Kombinasi store_id dan cat_id sebagai fitur interaksi
+store_dept: Kombinasi store_id dan dept_id sebagai fitur interaksi
+Tahap Strategi Grouped Modeling
+Grouped modeling adalah pendekatan pemodelan di mana dataset dibagi ke dalam kelompok-kelompok tertentu dan model yang terpisah dilatih untuk setiap kelompok. Pendekatan ini memungkinkan model menangkap karakteristik pola permintaan yang spesifik pada tiap kelompok, berbeda dengan pendekatan global model tunggal yang mengasumsikan keseragaman pola di seluruh dataset (Zanotti, 2025). Penelitian ini mengimplementasikan tiga strategi grouped modeling sebagai berikut:
+Tabel 3. Strategi Grouped Modeling
+Strategi
+Jumlah Kelompok
+Deskripsi
+By store
+10
+Pemodelan terpisah per toko (CA_1, CA_2, CA_3, CA_4, TX_1, TX_2, TX_3, WI_1, WI_2, WI_3)
+By store + Category
+30
+Pemodelan terpisah per kombinasi toko dan kategori produk (3 kategori: Foods, Hobbies, Household)
+By store + Department
+70
+Pemodelan terpisah per kombinasi toko dan departemen (7 departemen)
+Perbandingan sistematis terhadap ketiga strategi ini merupakan salah satu kontribusi empiris utama penelitian ini. Granularitas yang lebih tinggi (by store + department) berpotensi menangkap pola yang lebih spesifik, namun juga berpotensi mengurangi jumlah data per model sehingga meningkatkan risiko overfitting. Perbandingan empiris dilakukan untuk mengidentifikasi strategi yang memberikan keseimbangan terbaik antara spesifisitas model dan jumlah data pelatihan.
+Tahap Training Base Model
+Keempat model dasar LightGBM, XGBoost, CatBoost, dan LSTM dilatih dengan perbedaan mendasar dalam strategi grouped modeling yang diterapkan. LightGBM, XGBoost, dan CatBoost masing-masing dilatih secara terpisah pada setiap kelompok yang didefinisikan dalam tiga strategi grouped modeling (by store, by store + category, by store + department). LSTM dilatih secara global menggunakan seluruh data tanpa pemisahan kelompok, dengan identitas hierarkis dimasukkan sebagai fitur kontekstual.
+LightGBM
+LightGBM (Light Gradient Boosting Machine) merupakan framework gradient boosting berbasis pohon keputusan yang dikembangkan oleh Microsoft Research (Ke et al., 2017). LightGBM menggunakan pendekatan leaf-wise tree growth yang menghasilkan model lebih kompleks dengan loss lebih rendah dibandingkan level-wise growth, serta algoritma histogram-based yang mempercepat proses split finding pada data berdimensi tinggi. Fungsi objektif Tweedie digunakan karena distribusi Tweedie sesuai untuk data dengan banyak nilai nol dan skewness tinggi sebagaimana karakteristik dataset M5.
+Tabel 4. Hyperparameter LightGBM
+Hyperparameter
+Nilai
+Keterangan
+objective
+Tweedie
+Fungsi objektif Tweedie
+Tweedie_variance_power
+1.1
+Parameter bentuk distribusi Tweedie
+learning_rate
+0.03
+Laju pembelajaran
+n_estimators
+1500
+Jumlah pohon maksimum
+num_leaves
+2047
+Jumlah daun maksimum per pohon
+min_data_in_leaf
+4095
+Minimum sampel per daun
+feature_fraction
+0.5
+Fraksi fitur yang digunakan per iterasi
+bagging_fraction
+0.5
+Fraksi data yang digunakan per iterasi
+early_stopping_rounds
+100
+Berhenti jika tidak ada perbaikan selama 100 iterasi
+XGBoost
+XGBoost (eXtreme Gradient Boosting) merupakan implementasi gradient boosting dengan regularisasi bawaan L1 dan L2 yang kuat (Chen & Guestrin, 2016). XGBoost menggunakan pendekatan level-wise tree growth yang menghasilkan pohon lebih seimbang dan stabil. Regularisasi bawaan yang lebih eksplisit menjadikan XGBoost sebagai pembanding yang baik terhadap LightGBM dalam menilai trade-off antara bias dan variansi pada data M5.
+Tabel 5. Hyperparameter XGBoost
+Hyperparameter
+Nilai
+Keterangan
+objective
+reg:Tweedie
+Fungsi objektif Tweedie
+Tweedie_variance_power
+1.1
+Parameter bentuk distribusi
+learning_rate
+0.03
+Laju pembelajaran
+n_estimators
+1500
+Jumlah estimator
+max_depth
+8
+Kedalaman maksimum pohon
+subsample
+0.8
+Fraksi sampel per iterasi
+colsample_bytree
+0.8
+Fraksi fitur per pohon
+reg_alpha
+0.1
+Regularisasi L1
+reg_lambda
+1.0
+Regularisasi L2
+early_stopping_rounds
+100
+Early stopping patience
+CatBoost
+CatBoost merupakan algoritma gradient boosting yang dikembangkan oleh Yandex dengan keunggulan utama pada penanganan variabel kategorikal secara native tanpa memerlukan encoding manual (Prokhorenkova et al., 2018). CatBoost menggunakan teknik Ordered Boosting yang mengurangi target leakage selama proses training dengan menggunakan permutasi acak dalam estimasi statistik target.
+Tabel 6. Hyperparameter CatBoost
+Hyperparameter
+Nilai
+Keterangan
+loss_function
+Tweedie:vp=1.1
+Fungsi loss Tweedie
+learning_rate
+0.03
+Laju pembelajaran
+iterations
+1500
+Jumlah iterasi
+depth
+8
+Kedalaman pohon
+l2_leaf_reg
+3.0
+Regularisasi L2 pada daun
+bagging_temperature
+0.5
+Temperatur untuk Bayesian bootstrapping
+early_stopping_rounds
+100
+Early stopping patience
+LSTM (Long Short Term Memory)
+LSTM merupakan varian dari Recurrent Neural Network (RNN) yang dirancang untuk mengatasi masalah vanishing gradient sehingga mampu mempelajari dependensi jangka panjang pada data sekuensial (Hochreiter & Schmidhuber, 1997). Berbeda dengan model gradient boosting yang menerima input tabular berformat dua dimensi (sampel x fitur), LSTM memerlukan input dalam format tiga dimensi: (jumlah sampel, panjang sekuens, jumlah fitur) atau disebut (samples, timesteps, features).
+Konstruksi Input Sekuensial untuk LSTM
+Untuk memenuhi kebutuhan format input tiga dimensi, data tabular dikonversi ke format sekuensial melalui mekanisme sliding window. Untuk setiap observasi pada hari t, dibentuk sebuah sekuens yang berisi nilai fitur pada hari , di mana  adalah panjang window sekuens. Pada penelitian ini, window size  hari digunakan, mengikuti panjang horizon prediksi. Secara formal:
+Input LSTM:
+di mana  = jumlah fitur per langkah waktu
+Penting untuk dicatat bahwa konstruksi sliding window ini juga harus memperhatikan prinsip no lookahead: sekuens yang berakhir pada hari  hanya boleh digunakan untuk memprediksi hari . Normalisasi input (standardisasi per fitur menggunakan mean dan std dari training set) dilakukan sebelum pembentukan sekuens untuk memastikan stabilitas gradien selama proses training.
+Arsitektur Model LSTM
+Arsitektur LSTM yang digunakan dalam penelitian ini terdiri dari komponen berikut:
+Input Layer: Menerima tensor tiga dimensi
+LSTM Layer 1: 128 unit dengan  untuk meneruskan output setiap langkah waktu ke layer berikutnya
+Dropout Layer 1: Rate 0.2 untuk regularisasi dan pencegahan overfitting
+LSTM Layer 2: 64 unit dengan , menghasilkan representasi konteks sekuens
+Dropout Layer 2: Rate 0.2
+Dense Layer 1: 32 unit dengan aktivasi ReLU
+Dense Layer 2: 16 unit dengan aktivasi ReLU
+Output Layer: 1 unit dengan aktivasi linear untuk regresi
+Tabel 7. Hyperparameter LSTM
+Hyperparameter
+Nilai
+Keterangan
+window_size (timesteps)
+28
+Panjang sekuens input (hari)
+lstm_units_1
+128
+Unit LSTM layer pertama
+lstm_units_2
+64
+Unit LSTM layer kedua
+dropout_rate
+0.2
+Tingkat dropout pada kedua layer LSTM
+dense_units_1
+32
+Unit dense layer pertama
+dense_units_2
+16
+Unit dense layer kedua
+learning_rate
+0.001
+Laju pembelajaran (Adam optimizer)
+batch_size
+256
+Ukuran batch
+epochs
+100
+Jumlah epoch maksimum
+early_stopping patience
+10
+Berhenti jika val_loss tidak turun selama 10 epoch
+normalisasi input
+StandardScaler
+Standardisasi per fitur dari training set
+Strategi Pelatihan LSTM: Global Model
+Berbeda dengan LightGBM, XGBoost, dan CatBoost yang dilatih secara terpisah per kelompok sesuai strategi grouped modeling, LSTM dilatih secara global menggunakan seluruh 30.490 deret waktu tanpa pemisahan per kelompok. Keputusan ini didasarkan pada dua pertimbangan utama.
+Pertama, arsitektur LSTM membutuhkan volume data yang substansial untuk mempelajari pola dependensi temporal yang kompleks secara stabil. Pada strategi grouped modeling paling granular (by store + department, 70 kelompok), setiap kelompok hanya berisi sekitar 435 deret waktu. Jumlah ini berpotensi tidak mencukupi untuk pelatihan LSTM yang stabil, terutama pada kelompok dengan proporsi intermittent demand tinggi. Pendekatan global memungkinkan LSTM memanfaatkan seluruh data yang tersedia untuk mempelajari representasi temporal yang lebih umum.
+Kedua, pendekatan ini konsisten dengan metodologi yang digunakan pada kompetisi M5. Tim mf yang meraih posisi ketiga (In & Jung, 2022) melatih LSTM secara global pada seluruh deret waktu product-store, dan Mohammed et al. (2026) juga menggunakan arsitektur LSTM-GRU secara global pada dataset M5. Konteks kelompok tetap diberikan kepada LSTM melalui fitur hierarkis (store_id, cat_id, dept_id, state_id) yang dimasukkan sebagai fitur kontekstual pada setiap timestep dalam sekuens input.
+Dengan demikian, penelitian ini menggunakan pendekatan yang beragam secara sengaja: model berbasis gradient boosting dilatih per kelompok untuk menangkap heterogenitas pola permintaan antar kelompok, sementara LSTM dilatih secara global untuk memanfaatkan kapasitas pembelajaran temporal pada seluruh data yang tersedia. Perbedaan pendekatan ini menjadi salah satu aspek yang dianalisis dalam tahap evaluasi untuk memahami trade-off antara spesifisitas kelompok dan volume data pelatihan.
+Penanganan Fitur Lag Jangka Panjang pada Input LSTM
+Penelitian ini mendefinisikan fitur lag dan rolling statistics dengan horizon hingga 364 hari untuk model gradient boosting. Namun, LSTM dalam penelitian ini menggunakan window size W = 28 timesteps, sehingga sekuens input hanya mencakup 28 hari terakhir secara eksplisit. Fitur dengan horizon lebih dari 28 hari — seperti lag_90, lag_180, lag_364, rolling_mean_180, dan rolling_mean_364 tidak dapat dimasukkan sebagai bagian dari urutan temporal karena panjang sekuens yang digunakan tidak mencakup rentang waktu tersebut.
+Untuk mengatasi hal ini, fitur lag dan rolling dengan horizon lebih dari window size diperlakukan sebagai static contextual features. Fitur-fitur tersebut dihitung satu kali pada setiap observasi berdasarkan data historis aktual, kemudian di-tile yaitu nilai yang sama direplikasi ke setiap timestep dalam sekuens input. Secara formal, jika sekuens input LSTM memiliki dimensi (W, F), maka fitur static ditambahkan sebagai dimensi tambahan sehingga setiap timestep ke-w dalam sekuens menerima gabungan fitur temporal (temporal features pada hari ) dan fitur statis (static features pada hari t). Dengan demikian, LSTM tetap memiliki akses ke informasi historis jangka panjang tanpa melanggar struktur input tiga dimensi yang disyaratkan.
+Mekanisme ini memungkinkan model menangkap dua jenis informasi secara bersamaan: pola temporal jangka pendek melalui sekuens 28 hari, dan konteks historis jangka panjang melalui fitur statis. Pendekatan ini konsisten dengan praktik yang umum digunakan dalam arsitektur LSTM untuk retail forecasting yang menggabungkan sequence features dan context features (Mohammed et al., 2026).
+Tahap Strategi Forecasting Multi-Horizon
+Kompetisi M5 mensyaratkan prediksi untuk 28 hari ke depan, yang termasuk dalam kategori multi-horizon forecasting. Dua strategi yang dibandingkan secara empiris dalam penelitian ini adalah recursive forecasting dan direct/non-recursive forecasting.
+Recursive Forecasting
+Recursive forecasting menggunakan satu model untuk memprediksi seluruh horizon secara iteratif. Model memprediksi hari ke-t, kemudian hasil prediksi tersebut digunakan sebagai nilai fitur lag untuk memprediksi hari ke-t+1, dan seterusnya hingga hari ke-28. Mekanismenya adalah:
+Model dilatih menggunakan data historis dengan fitur lag aktual.
+Untuk prediksi hari ke-1: fitur lag diisi dari data historis aktual.
+Untuk prediksi hari ke-t (t >= 2): fitur lag pada posisi kurang dari t diisi dengan hasil prediksi sebelumnya.
+Proses diulang secara iteratif hingga t = 28.
+Keunggulan strategi ini adalah efisiensi komputasi karena hanya membutuhkan satu model. Kelemahannya adalah risiko error propagation: kesalahan prediksi pada hari awal akan terakumulasi ke hari-hari berikutnya karena nilai prediksi digunakan sebagai input untuk prediksi selanjutnya.
+Direct (Non-Recursive) Forecasting
+Direct forecasting membangun model terpisah untuk setiap horizon prediksi. Untuk horizon 28 hari, dibangun 28 model independen, di mana model ke-h dilatih untuk memprediksi langsung nilai penjualan pada h hari ke depan dari data historis aktual tanpa menggunakan prediksi sebagai input.
+Keunggulan strategi ini adalah tidak adanya error propagation karena setiap prediksi bersifat independen dan hanya menggunakan data historis aktual. Kelemahannya adalah kebutuhan komputasi yang lebih besar (28 model per kelompok per algoritma) serta tidak menangkap dependensi eksplisit antar horizon.
+Tahap Evaluasi Model Individual
+Metrik Evaluasi Utama: WRMSSE
+Weighted Root Mean Squared Scaled Error (WRMSSE) merupakan metrik evaluasi resmi kompetisi M5. Metrik ini menggabungkan konsep scaled error untuk normalisasi antar deret waktu dengan skala berbeda, serta pembobotan berdasarkan kontribusi nilai penjualan masing-masing deret. Definisi formalnya adalah:
+di mana scale_i adalah rata-rata squared error dari naive model (random walk) pada deret , dan  adalah bobot berdasarkan total nilai penjualan dalam satuan dolar pada 28 hari terakhir training set.
+Metrik Evaluasi Pendukung
+Root Mean Squared Error (RMSE): Mengukur rata-rata squared error, memberikan penalti lebih besar terhadap kesalahan besar.
+Mean Absolute Error (MAE): Mengukur rata-rata absolut error, lebih robust terhadap outlier dibanding RMSE.
+Mean Absolute Percentage Error (MAPE): Mengukur error dalam bentuk persentase. Digunakan dengan catatan bahwa MAPE tidak terdefinisi untuk nilai aktual nol, sehingga hanya dihitung pada observasi dengan nilai aktual > 0.
+Kriteria Pemilihan Model Terbaik
+Pemilihan model terbaik dilakukan berdasarkan combined score yang mempertimbangkan dua aspek sekaligus:
+di mana  adalah rata-rata WRMSSE antar empat fold,  adalah standar deviasi WRMSSE antar fold sebagai proksi stabilitas, dan lambda adalah bobot penalti terhadap ketidakstabilan ( sebagai default). Model dengan combined_score terendah diprioritaskan sebagai kandidat ensemble, mengikuti pendekatan yang digunakan oleh pemenang kompetisi M5 (In & Jung, 2022).
+Tahap Best Model Selection
+Tahap Best Model Selection merupakan jembatan antara evaluasi model individual dan pembangunan ensemble. Tahap ini menentukan secara eksplisit model-model mana dari seluruh kandidat yang akan diikutsertakan dalam kedua strategi ensemble (7A dan 7B).
+Inventarisasi Kandidat Model
+Seluruh proses pelatihan pada tahap sebelumnya menghasilkan 20 model dasar yang menjadi kandidat ensemble, sebagaimana dirangkum pada Tabel 8. berikut.
+Tabel 8. 20 model dasar kandidat ensemble
+No
+Algoritma
+Strategi Grouped
+Strategi Forecasting
+Kode Model
+1
+LightGBM
+By Store
+Recursive
+LGB-S-R
+2
+LightGBM
+By Store
+Direct
+LGB-S-D
+3
+LightGBM
+By Store + Category
+Recursive
+LGB-SC-R
+4
+LightGBM
+By Store + Category
+Direct
+LGB-SC-D
+5
+LightGBM
+By Store + Dept
+Recursive
+LGB-SD-R
+6
+LightGBM
+By Store + Dept
+Direct
+LGB-SD-D
+7
+XGBoost
+By Store
+Recursive
+XGB-S-R
+8
+XGBoost
+By Store
+Direct
+XGB-S-D
+9
+XGBoost
+By Store + Category
+Recursive
+XGB-SC-R
+10
+XGBoost
+By Store + Category
+Direct
+XGB-SC-D
+11
+XGBoost
+By Store + Dept
+Recursive
+XGB-SD-R
+12
+XGBoost
+By Store + Dept
+Direct
+XGB-SD-D
+13
+CatBoost
+By Store
+Recursive
+CAT-S-R
+14
+CatBoost
+By Store
+Direct
+CAT-S-D
+15
+CatBoost
+By Store + Category
+Recursive
+CAT-SC-R
+16
+CatBoost
+By Store + Category
+Direct
+CAT-SC-D
+17
+CatBoost
+By Store + Dept
+Recursive
+CAT-SD-R
+18
+CatBoost
+By Store + Dept
+Direct
+CAT-SD-D
+19
+LSTM
+Global
+Recursive
+LSTM-R
+20
+LSTM
+Global
+Direct
+LSTM-D
+Kriteria Seleksi
+Setiap model dievaluasi berdasarkan combined score yang telah didefinisikan pada tahap evaluasi:
+Nilai mean_WRMSSE merepresentasikan tingkat akurasi rata-rata model pada seluruh fold validasi, sedangkan std_WRMSSE merepresentasikan stabilitas performa antar fold. Nilai memberikan penalti moderat terhadap model yang memiliki variasi performa tinggi, sehingga model yang dipilih tidak hanya akurat tetapi juga konsisten.
+Model diurutkan dari combined score terendah (terbaik) ke tertinggi. Pada pipeline utama penelitian ini, digunakan Top-8 model terbaik berdasarkan combined score sebagai kandidat ensemble. Batas Top-8 dipilih sebagai titik tengah yang memberikan diversitas yang cukup bagi ensemble sekaligus menghindari masuknya model dengan performa buruk, konsisten dengan pendekatan pemenang kompetisi M5 yang menggunakan 6 model dalam ensemble akhirnya (In & Jung, 2022).
+Sebagai analisis sensitivitas, penelitian ini juga mengevaluasi skenario Top-5 dan Top-10 untuk menguji apakah kesimpulan utama bersifat robust terhadap variasi jumlah kandidat ensemble. Evaluasi ketiga skenario dilakukan berdasarkan WRMSSE rata-rata pada keempat fold validasi (CV0–CV3), sebelum evaluasi pada test set dilakukan, sehingga test set tetap berfungsi sebagai data holdout yang tidak terlibat dalam proses seleksi apapun. Hasil analisis sensitivitas dilaporkan pada Bab 4.
+Alur Kandidat ke Ensemble
+Delapan model terpilih dengan combined score terbaik selanjutnya digunakan sebagai kandidat pada kedua strategi ensemble secara paralel:
+Untuk Optimized Weighted Ensemble (7A): prediksi dari 8 model terpilih pada data validasi digunakan sebagai input optimasi bobot melalui SLSQP.
+Untuk Stacking Ensemble (7B): prediksi OOF dari 8 model terpilih digunakan sebagai meta-features untuk melatih Ridge Regression.
+Penggunaan kandidat yang identik untuk kedua strategi ensemble memastikan bahwa perbandingan antara 7A dan 7B bersifat apple-to-apple — perbedaan performa yang teramati mencerminkan perbedaan mekanisme penggabungan, bukan perbedaan model yang diikutsertakan.
+Perlakuan Model yang Tidak Terpilih
+Model yang tidak masuk dalam skenario kandidat ensemble yang digunakan tidak diikutsertakan dalam pembangunan ensemble pada skenario tersebut, namun hasil evaluasi seluruh 20 model tetap dilaporkan di Bab 4 sebagai bagian dari analisis perbandingan performa model individual. Hal ini memungkinkan analisis tentang seberapa besar gap performa antara model terbaik dan model yang tidak terpilih, serta menjadi dasar diskusi tentang karakteristik model mana yang cenderung berkinerja baik pada dataset M5.
+Tahap Ensemble Model
+Ensemble learning menggabungkan prediksi dari beberapa model dasar untuk menghasilkan prediksi akhir yang lebih akurat dan stabil. Penelitian ini mengimplementasikan dua strategi ensemble yang kemudian dibandingkan secara empiris.
+Optimized Weighted Ensemble (7A)
+Optimized Weighted Ensemble menggabungkan prediksi model-model terpilih dengan bobot yang dioptimalkan. Bobot dicari melalui optimasi numerik untuk meminimalkan WRMSSE pada data validasi. Formulasi optimasinya adalah:
+Optimasi diselesaikan menggunakan algoritma Sequential Least Squares Quadratic Programming (SLSQP) melalui fungsi scipy.optimize.minimize dengan parameter method='SLSQP'. Initial weights ditetapkan secara merata  sebagai titik awal. Untuk menghindari local minima, optimasi dijalankan dengan beberapa titik awal acak kemudian dipilih solusi dengan WRMSSE terbaik.
+Stacking Ensemble dengan Ridge Regression (7B)
+Stacking Ensemble menggunakan prediksi dari model-model dasar sebagai fitur input bagi sebuah meta-learner, yaitu model tingkat kedua yang mempelajari cara terbaik menggabungkan prediksi tersebut. Pada penelitian ini, Ridge Regression digunakan sebagai meta-learner karena regularisasi L2-nya membantu mencegah overfitting ketika jumlah fitur input (prediksi model dasar) cukup banyak.
+Prosedur Out-of-Fold yang Aman Secara Metodologis
+Titik kritis dalam implementasi stacking untuk time series adalah cara menghasilkan out-of-fold (OOF) predictions yang akan digunakan melatih meta-learner. Jika OOF predictions dihasilkan dari data yang sama dengan data training model dasar, maka meta-learner akan mendapatkan informasi tentang in-sample fit (bukan generalization), sehingga terjadi leakage yang menyebabkan meta-learner overfit.
+Untuk mencegah hal ini, OOF predictions pada penelitian ini dihasilkan menggunakan time-series cross-validation secara ketat dengan prosedur sebagai berikut:
+Untuk setiap fold k dalam {CV0, CV1, CV2, CV3}: latih setiap model dasar menggunakan data training pada fold k (tanpa melihat data validasi fold k), kemudian hasilkan prediksi pada data validasi fold k.
+Kumpulkan seluruh OOF predictions dari keempat fold untuk membentuk matriks meta-features berukuran (N_total_validation, M), di mana N_total_validation adalah total observasi pada semua periode validasi dan M adalah jumlah model dasar.
+Meta-learner Ridge Regression dilatih menggunakan matriks meta-features tersebut sebagai input (X_meta) dan nilai aktual target (y_actual) sebagai output.
+Untuk prediksi final pada test set, setiap model dasar dilatih ulang menggunakan seluruh data training, kemudian prediksinya pada test set digunakan sebagai input meta-features untuk prediksi Ridge.
+Prosedur OOF di atas berlaku untuk seluruh model dasar, termasuk LSTM. Namun karena LSTM adalah model berbasis jaringan saraf yang diinisialisasi secara acak, terdapat pertimbangan tambahan untuk memastikan reprodusibilitas. LSTM di-retrain dari awal (from scratch) untuk setiap fold CV, menghasilkan total empat kali pelatihan untuk keperluan OOF generation dan satu kali pelatihan final menggunakan seluruh data training. Tidak digunakan weight transfer atau fine-tuning antar fold karena setiap fold memiliki distribusi data yang berbeda akibat skema expanding window. Random seed ditetapkan secara eksplisit dan konsisten pada seluruh komponen LSTM — inisialisasi bobot, dropout mask, dan urutan batch — sehingga hasil pelatihan dapat direproduksi secara konsisten. Konsistensi ini penting agar perbandingan performa antar fold mencerminkan variasi data, bukan variasi akibat inisialisasi acak yang berbeda.
+Optimasi Hyperparameter Ridge
+Parameter alpha (kekuatan regularisasi L2) pada Ridge Regression dipilih melalui cross-validated Ridge (RidgeCV) menggunakan rentang nilai {0.01, 0.1, 1.0, 10.0, 100.0}. Seleksi alpha dilakukan berdasarkan WRMSSE pada OOF predictions.
+Fungsi Objektif Ridge
+Minimisasi dilakukan terhadap fungsi berikut:
+di mana  adalah nilai aktual pada periode ,  adalah prediksi model ke- pada periode , dan alpha adalah parameter regularisasi.
+Tahap Final Evaluation
+Evaluasi Akurasi per Level Hierarki
+Evaluasi akhir dilakukan tidak hanya secara agregat, tetapi juga secara terperinci per level hierarki (level 1 hingga 12) untuk memahami di mana model memberikan peningkatan terbesar dan di mana masih terdapat keterbatasan. Hal ini mengikuti metodologi evaluasi kompetisi M5 yang menunjukkan bahwa performa model dapat bervariasi signifikan antar level agregasi (Makridakis et al., 2022).
+Uji Signifikansi Statistik: Diebold-Mariano Test
+Diebold-Mariano (DM) Test digunakan untuk menguji apakah perbedaan performa antara dua metode forecasting secara statistik signifikan, atau hanya merupakan variasi acak (Diebold & Mariano, 1995). Penggunaan DM test penting agar klaim bahwa 'metode A lebih baik dari metode B' didukung oleh bukti statistik, bukan sekadar perbandingan deskriptif.
+Hipotesis nol DM test adalah bahwa kedua metode memiliki ekspektasi loss yang sama  adalah selisih loss pada periode t. Statistik uji DM dihitung sebagai:
+di mana  adalah rata-rata  dan  adalah jumlah periode evaluasi. DM test diterapkan untuk membandingkan: (a) setiap ensemble vs model tunggal terbaik, dan (b) Optimized Weighted Ensemble vs Stacking Ensemble.
+Analisis Interpretabilitas: SHAP
+SHAP (SHapley Additive exPlanations) digunakan untuk menjelaskan kontribusi setiap fitur terhadap hasil prediksi model (Lundberg & Lee, 2017). Analisis SHAP memberikan dua tingkat interpretabilitas:
+Global Interpretability: Summary plot SHAP menampilkan fitur-fitur yang paling berkontribusi secara keseluruhan, memungkinkan identifikasi apakah lag features, calendar features, atau price features yang paling penting dalam model.
+Local Interpretability: Force plot SHAP menjelaskan mengapa model menghasilkan prediksi tertentu untuk satu observasi spesifik.
+Feature Interaction: Dependence plot menampilkan hubungan antara nilai satu fitur dengan nilai SHAP-nya, serta interaksinya dengan fitur lain.
+SHAP diterapkan pada model LightGBM karena dukungan native library SHAP yang efisien untuk tree-based models melalui TreeExplainer.
+Stability Analysis
+Stability analysis dilakukan untuk menilai apakah peningkatan akurasi model bersifat konsisten di berbagai kondisi, atau hanya terjadi pada kondisi tertentu. Tiga dimensi analisis stabilitas dilakukan:
+Stabilitas Antar Cross-validation Fold
+Koefisien variasi WRMSSE antar fold dihitung sebagai  Nilai CV yang rendah menunjukkan performa model yang konsisten antar periode waktu. Model dengan CV tinggi mengindikasikan performa yang tidak reliabel meskipun rata-rata akurasinya baik.
+Stabilitas Antar Kelompok Hierarkis
+Distribusi WRMSSE dianalisis secara terpisah untuk setiap kelompok (per toko, per kategori, per departemen) untuk mengidentifikasi kelompok mana yang memiliki error tinggi dan kelompok mana yang sudah baik. Analisis ini juga membandingkan performa ketiga strategi grouped modeling (by store, by store-category, by store-department).
+Stabilitas Antar Horizon Prediksi
+WRSSE (tanpa rata-rata akhir) dihitung per hari untuk setiap level hierarki dan divisualisasikan sebagai plot degradasi akurasi terhadap panjang horizon. Analisis ini memungkinkan identifikasi pada hari ke berapa akurasi mulai menurun signifikan, memberikan informasi tentang batas keandalan forecast untuk perencanaan operasional.
+Tahap Output Prediksi 28 Hari
+Sistem forecasting menghasilkan prediksi akhir untuk horizon 28 hari ke depan pada seluruh 30.490 deret waktu level produk-toko (level 12). Prediksi pada level yang lebih tinggi diperoleh melalui agregasi bottom-up dengan cara menjumlahkan prediksi level di bawahnya, memastikan koherensi hierarkis yaitu prediksi pada level agregat konsisten dengan jumlah prediksi pada level yang lebih granular.
+Output akhir disajikan dalam format yang konsisten dengan submission template kompetisi M5, mencakup 30.490 baris prediksi untuk 28 hari ke depan (d_1942 hingga d_1969) beserta visualisasi dan tabel ringkasan performa per level hierarki.
+ALUR IMPLEMENTASI SISTEM
+Implementasi sistem peramalan dilakukan secara modular menggunakan bahasa pemrograman Python dengan pustaka utama sebagai berikut: Pandas dan NumPy untuk manipulasi dan pemrosesan data, LightGBM, XGBoost, dan CatBoost untuk pelatihan model gradient boosting, TensorFlow/Keras untuk arsitektur LSTM, Scikit-learn untuk preprocessing pipeline, Ridge Regression, dan metrik evaluasi, SciPy untuk optimasi bobot ensemble, serta SHAP untuk analisis interpretabilitas model.
+Seluruh tahapan diimplementasikan dalam pipeline yang terstruktur untuk memastikan reprodusibilitas eksperimen. Random seed ditetapkan secara eksplisit pada semua komponen yang melibatkan inisialisasi acak (LightGBM, XGBoost, CatBoost, LSTM, dan inisialisasi bobot ensemble) sehingga hasil dapat direproduksi secara konsisten.
+DAFTAR PUSTAKA
+Abolghasemi, M. (2025). The power of information sharing: evaluating POS and order data for hierarchical forecasting in multi-echelon supply chains. International Journal of Production Research. https://doi.org/10.1080/00207543.2025.2532756
+Ahmed, K. R., Ansari, M. E., Ahsan, M. N., Rohan, A., Uddin, M. B., & Rivin, M. A. H. (2025). Deep learning framework for interpretable supply chain forecasting using SOM ANN and SHAP. Scientific Reports 2025 15:1, 15(1), 26355-. https://doi.org/10.1038/s41598-025-11510-z
+Alsulamy, S. (2025). Predicting construction delay risks in Saudi Arabian projects: A comparative analysis of CatBoost, XGBoost, and LGBM. Expert Systems with Applications, 268, 126268. https://doi.org/10.1016/J.ESWA.2024.126268
+Arora, R., Sachs, A. L., Svetunkov, I., Muth, M., & Boylan, J. E. (2025). Forecasting demand during and after supply chain disruptions using a shock smoother ETS. International Journal of Production Research. https://doi.org/10.1080/00207543.2025.2577158
+Bandara, K., Hewamalage, H., Godahewa, R., & Gamakumara, P. (2022). A fast and scalable ensemble of global models with long memory and data partitioning for the M5 forecasting competition. International Journal of Forecasting, 38(4), 1400–1404. https://doi.org/10.1016/J.IJFORECAST.2021.11.004
+Constantin, R.-S., Davidescu, A. A., & Manta, E. M. (2025). Time Series Forecasting with LightGBM under Data Scarcity: An Application to Romania’s Inland Gas Consumption. Proceedings of the International Conference on Business Excellence, 19(1), 1518–1531. https://doi.org/10.2478/PICBE-2025-0118
+Elshaarawy, M. K. (2025). Metaheuristic-driven CatBoost model for accurate seepage loss prediction in lined canals. Multiscale and Multidisciplinary Modeling, Experiments and Design, 8(5). https://doi.org/10.1007/S41939-025-00800-8
+Giannopoulos, P. G., Dasaklis, T. K., Tsantilis, I., & Patsakis, C. (2025). Machine learning algorithms in intermittent demand forecasting: a review. In International Journal of Production Research. Taylor and Francis Ltd. https://doi.org/10.1080/00207543.2025.2578701
+Godahewa, R., Bergmeir, C., Erkin Baz, Z., Zhu, C., Song, Z., García, S., & Benavides, D. (2025). On forecast stability. International Journal of Forecasting, 41(4), 1539–1558. https://doi.org/10.1016/J.IJFORECAST.2025.01.006
+Hani, A. A., Sallow, A. B., Ahmad, H. B., Abdulrahman, S. M., Asaad, R. R., Zeebaree, S. R. M., & Majeed, D. A. (2024). COMPARATIVE ANALYSIS OF STATE-OF-THE-ART CLASSIFIERS FOR PARKINSON’S DISEASE DIAGNOSIS WITH TECHONLOGY. Jurnal Ilmiah Ilmu Terapan Universitas Jambi, 8(2), 409–423. https://doi.org/10.22437/JIITUJ.V8I2.32771
+In, Y. J., & Jung, J. Y. (2022). Simple averaging of direct and recursive forecasts via partial pooling using machine learning. International Journal of Forecasting, 38(4), 1386–1399. https://doi.org/10.1016/J.IJFORECAST.2021.11.007
+Lazcano, A., Sandubete, J. E., & Jaramillo-Morán, M. A. (2025). A comparative framework for multi-horizon time series forecasting: Neural networks with adaptive preprocessing. Machine Learning with Applications, 22, 100781. https://doi.org/10.1016/J.MLWA.2025.100781
+Liu, Y., Kalaitzi, D., Wang, M., & Papanagnou, C. (2025). A machine learning approach to inventory stockout prediction. Journal of Digital Economy, 4, 144–155. https://doi.org/10.1016/J.JDEC.2025.06.002
+Long, X., Bui, Q., Oktavian, G., Schmidt, D. F., Bergmeir, C., Godahewa, R., Lee, S. P., Zhao, K., & Condylis, P. (2025). Scalable probabilistic forecasting in retail with gradient boosted trees: A practitioner’s approach. International Journal of Production Economics, 279, 109449. https://doi.org/10.1016/J.IJPE.2024.109449
+Makridakis, S., Spiliotis, E., & Assimakopoulos, V. (2022). M5 accuracy competition: Results, findings, and conclusions. International Journal of Forecasting, 38(4), 1346–1364. https://doi.org/10.1016/J.IJFORECAST.2021.11.013
+Mohammed, Z., Anas, C., & el Hammoume, M. (2026). A hybrid learning framework for forecasting uncertainty and adaptive inventory planning in retail supply chains. Supply Chain Analytics, 13, 100180. https://doi.org/10.1016/J.SCA.2025.100180
+Mohsen, S., Elkaseer, A., & Scholz, S. G. (2021). Industry 4.0-Oriented Deep Learning Models for Human Activity Recognition. IEEE Access, 9, 150508–150521. https://doi.org/10.1109/ACCESS.2021.3125733
+Petropoulos, F., Grushka-Cockayne, Y., Siemsen, E., & Spiliotis, E. (2025). Wielding Occam’s razor: Fast and frugal retail forecasting. Journal of the Operational Research Society, 76(8), 1564–1583. https://doi.org/10.1080/01605682.2024.2421339
+Petropoulos, F., Hollyman, R. A., & Spiliotis, E. (2025). Scalable forecast reconciliation through (un)guided Sub-hierarchies. Journal of the Operational Research Society. https://doi.org/10.1080/01605682.2025.2599394
+Rahman Mahin, M. P., Shahriar, M., Das, R. R., Roy, A., & Reza, A. W. (2025). Enhancing Sustainable Supply Chain Forecasting Using Machine Learning for Sales Prediction. Procedia Computer Science, 252, 470–479. https://doi.org/10.1016/J.PROCS.2025.01.006
+Samal, T., & Ghosh, A. (2026). Ensemble-based predictive analytics for demand forecasting in multi-channel retailing. Expert Systems with Applications, 299, 130212. https://doi.org/10.1016/J.ESWA.2025.130212
+Seyam, A., Mathew, S. S., Du, B., Barachi, M. el, & Shen, J. (2025). A stacking ensemble model for food demand forecasting: A preventative approach to food waste reduction. Cleaner Logistics and Supply Chain, 15, 100225. https://doi.org/10.1016/J.CLSCN.2025.100225
+So, B., & Deng, M. (2025). Advancing Zero-Inflated Tweedie Models and Evaluating Gradient Boosting Libraries for Auto Claims. North American Actuarial Journal, 29(4), 887–904. https://doi.org/10.1080/10920277.2025.2454460
+Zanotti, M. (2025). On the retraining frequency of global models in retail demand forecasting. Machine Learning with Applications, 22, 100769. https://doi.org/10.1016/J.MLWA.2025.100769

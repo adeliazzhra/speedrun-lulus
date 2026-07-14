@@ -1,0 +1,24 @@
+name: speedrun-lulus
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - numpy<2
+  - pandas
+  - scipy
+  - scikit-learn
+  - matplotlib
+  - seaborn
+  - jupyterlab
+  - notebook
+  - ipykernel
+  - lightgbm
+  - xgboost
+  - catboost
+  - shap
+  - statsmodels
+  - tqdm
+  - pip:
+      - tensorflow==2.15.*

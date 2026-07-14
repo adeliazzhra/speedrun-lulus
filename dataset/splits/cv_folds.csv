@@ -1,0 +1,5 @@
+fold,training_start_day,training_end_day,validation_start_day,validation_end_day,training_days,validation_days,training_start_date,training_end_date,validation_start_date,validation_end_date
+CV0,d_1,d_1801,d_1802,d_1829,1801,28,2011-01-29,2016-01-03,2016-01-04,2016-01-31
+CV1,d_1,d_1829,d_1830,d_1857,1829,28,2011-01-29,2016-01-31,2016-02-01,2016-02-28
+CV2,d_1,d_1857,d_1858,d_1885,1857,28,2011-01-29,2016-02-28,2016-02-29,2016-03-27
+CV3,d_1,d_1885,d_1886,d_1913,1885,28,2011-01-29,2016-03-27,2016-03-28,2016-04-24
